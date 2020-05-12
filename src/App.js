@@ -5,15 +5,17 @@ import './App.css';
 
 class App extends React.Component {
 	
-	listApplication() {
+	fetchingListOfApp = () => {
 		fetch("/application")
 			.then(responseMsg => {
 				return responseMsg.json();
 			})
 			.then(responseJson => {
 				if (responseJson.code !== 200) {
-				}
-				else {
+				} else {
+					/**
+					 * alert log
+					 */
 				}
 			})
 			.catch(error => {
@@ -21,10 +23,30 @@ class App extends React.Component {
 			})
 			.finally(() => {
 			})
-	}
+	};
+	
+	fetchingLog = (application, date, id) => {
+		fetch("/log")
+			.then(responseMsg => {
+				return responseMsg.json();
+			})
+			.then(responseJson => {
+				if (responseJson.code !== 200) {
+				} else {
+					/**
+					 * alert log
+					 */
+				}
+			})
+			.catch(error => {
+				console.log(error)
+			})
+			.finally(() => {
+			})
+	};
 	
 	componentDidMount() {
-		this.listApplication()
+		this.fetchingListOfApp()
 	}
 	
 	render() {
