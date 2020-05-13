@@ -17,4 +17,13 @@ module.exports = function (app) {
             changeOrigin: true,
         }),
     );
+
+    app.use(
+        '/histories',
+        createProxyMiddleware({
+            // add athena back end address
+            target: 'http://localhost:28081',
+            changeOrigin: true,
+        }),
+    );
 };
