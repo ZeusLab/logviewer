@@ -10,6 +10,8 @@ const {
     addBabelPresets,
 } = require('customize-cra');
 
+const addStylusLoader = require('customize-cra-add-stylus-loader');
+
 module.exports = function (config, env) {
     //return config;
     config.optimization.runtimeChunk = false;
@@ -19,6 +21,7 @@ module.exports = function (config, env) {
         },
     };
     return Object.assign(config, override(
+        addStylusLoader({}),
         disableEsLint(),
         addDecoratorsLegacy(),
         addExternalBabelPlugins('@babel/plugin-proposal-class-properties'),

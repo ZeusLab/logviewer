@@ -10,13 +10,16 @@ html, body {
     width: 100%;
 }
 
-.App {
-    text-align: center;
+body {
+    background-color: #2D3848;
 }
 
-.App-logo {
-    height: 40vmin;
-    pointer-events: none;
+.full-screen {
+    height: calc(100vh - 8rem);
+}
+
+.app {
+    position: relative;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -26,8 +29,7 @@ html, body {
 }
 
 .header, .footer {
-    background-color: #2D3848;
-    height: 40px;
+    min-height: 4rem;
     font-size: calc(10px + 2vmin);
     color: white;
 }
@@ -43,15 +45,14 @@ html, body {
     background-color: #ffffff;
 }
 
-.App-link {
-    color: #61dafb;
+.log-display {
+    padding-right: 16px;
 }
 
-@keyframes App-logo-spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+.empty-log {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    font-style: italic;
+    color: #aaaaaa;
 }

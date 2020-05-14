@@ -4,9 +4,12 @@
   "private": true,
   "dependencies": {
     "bootstrap": "^4.4.1",
+    "chained-function": "^0.5.0",
+    "classnames": "^2.2.6",
     "react": "^16.13.1",
     "react-bootstrap": "^1.0.1",
     "react-dom": "^16.13.1",
+    "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.1"
   },
   "scripts": {
@@ -35,8 +38,12 @@
     "@babel/plugin-proposal-decorators": "^7.8.3",
     "@babel/preset-react": "^7.9.4",
     "customize-cra": "^0.9.1",
+    "customize-cra-add-stylus-loader": "^0.0.3",
     "http-proxy-middleware": "^1.0.3",
     "prettier": "^2.0.5",
-    "react-app-rewired": "^2.1.6"
+    "react-app-rewired": "^2.1.6",
+    "styled-components": "^5.1.0",
+    "stylus": "^0.54.7",
+    "stylus-loader": "^3.0.2"
   }
 }
