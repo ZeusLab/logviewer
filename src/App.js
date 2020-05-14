@@ -63,7 +63,7 @@ class LeftMenu extends React.Component {
         this.setState({
             currentApp: application,
         });
-        console.log('onitem click ' + application);
+        this.onAppSelected(application);
     };
 
     fetchingListOfApp = () => {
@@ -78,7 +78,6 @@ class LeftMenu extends React.Component {
                     responseJson.data.forEach((item) => {
                         arr.push(item);
                     });
-                    console.log(arr);
                     this.setState({
                         applications: arr,
                     })
@@ -110,14 +109,13 @@ class LeftMenu extends React.Component {
         return (
             <div className="sidenav-nav">
                 {arr.map((value, index) => {
-                    const isSelected = (value === appSelected) ? true : false;
+                    const isSelected = (value === appSelected);
                     return (
                         <MenuItem key={value}
                                   appName={value}
                                   isSelected={isSelected}
                                   onAppSelected={chainedFunction(
                                       this.onItemClick,
-                                      this.onAppSelected,
                                   )}
                         />
                     );
@@ -131,14 +129,20 @@ class LogDisplay extends React.Component {
 
     constructor(props) {
         super(props);
-        let app = props.application;
+        const {
+            application,
+            onLoadCompleted,
+        } = this.props;
+        this.onLoadCompleted = onLoadCompleted;
         this.state = {
-            application: app,
+            application: application,
         }
     }
 
     changeApplication = (application) => {
-        console.log("----------------" + application);
+        this.setState({
+            application: application,
+        })
         this.fetchingHistories(application)
     };
 
@@ -150,9 +154,6 @@ class LogDisplay extends React.Component {
             .then(responseJson => {
                 if (responseJson.code === 200) {
                     this.fetchingLog(tag, responseJson.data[0], 0)
-                    this.setState({
-                        application: tag,
-                    })
                 } else {
                     /**
                      * alert log
@@ -160,13 +161,13 @@ class LogDisplay extends React.Component {
                 }
             })
             .catch(error => {
-                console.log(error);
             })
             .finally(() => {
             })
     };
 
     fetchingLog = (tag, date, id) => {
+        console.log("fetching log");
         let uri = encodeURI('tag=' + tag
             + '&date=' + date
             + '&id=' + id);
@@ -183,9 +184,9 @@ class LogDisplay extends React.Component {
                 }
             })
             .catch(error => {
-                console.log(error)
             })
             .finally(() => {
+                this.onLoadCompleted();
             })
     };
 
@@ -198,11 +199,7 @@ class LogDisplay extends React.Component {
     render() {
         let app = this.state.application;
         if (app === undefined || app === "") {
-            return (<Card className="full-screen">
-                <Card.Body className="empty-log">
-                    <p>Select application</p>
-                </Card.Body>
-            </Card>);
+            return (<React.Fragment></React.Fragment>);
         }
         return (
             <Card className="full-screen">
@@ -222,9 +219,15 @@ class App extends React.Component {
     }
 
     onAppSelected = (application) => {
-        console.log('change application ' + application);
+        this.setState({
+            isActive: true,
+        })
         this.currentApp.current.changeApplication(application);
     };
+
+    onLoadCompleted = () => {
+        console.log("loading complete");
+    }
 
     render() {
         return (
@@ -239,7 +242,9 @@ class App extends React.Component {
 
                         <Col mx={10} lg={10} xl={10}>
                             <div className="log-display">
-                                <LogDisplay ref={this.currentApp}/>
+                                <LogDisplay
+                                    ref={this.currentApp}
+                                    onLoadCompleted={this.onLoadCompleted}/>
                             </div>
                         </Col>
                     </Row>
