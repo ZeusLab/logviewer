@@ -9,7 +9,7 @@ import {
 } from 'react-bootstrap';
 import './App.css';
 import chainedFunction from 'chained-function';
-import BootstrapTable from 'react-bootstrap-table-next';
+import {VariableSizeList} from 'react-window';
 import "./index.styl";
 
 class MenuItem extends PureComponent {
@@ -128,7 +128,14 @@ class LeftMenu extends React.Component {
     }
 }
 
+
 class LogDisplayContent extends React.Component {
+
+    Row = ({index, style}) => (
+        <div style={style}>
+            {/* define the row component using items[index] */}
+        </div>
+    );
 
     constructor(props) {
         super(props);
@@ -144,7 +151,7 @@ class LogDisplayContent extends React.Component {
                 dataField: 'message',
                 text: 'Message',
             }],
-        }
+        };
     }
 
     fetchingLog = (tag, date, id) => {
@@ -230,6 +237,14 @@ class LogDisplayContent extends React.Component {
         };
         return (
             <div className="message-table">
+                <VariableSizeList
+                    height={500}
+                    width={500}
+                    itemCount={data.length}
+                    itemSize={100}
+                >
+                    {Row}
+                </VariableSizeList>
                 {/*<BootstrapTable*/}
                 {/*    keyField="id"*/}
                 {/*    data={data}*/}
