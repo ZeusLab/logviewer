@@ -8,10 +8,15 @@ html, body {
     margin: 0px;
     height: 100%;
     width: 100%;
+    font-family: Roboto;
 }
 
 body {
     background-color: #2D3848;
+}
+
+table {
+    width: 100%;
 }
 
 .full-screen {
@@ -49,10 +54,70 @@ body {
     padding-right: 16px;
 }
 
-.empty-log {
+.log-display .header {
+    background-color: #F5F5F5;
+    min-height: 3rem;
+    border-bottom: #E3E3E3 solid 1px;
+}
+
+.log-display .card-body {
     width: 100%;
     height: 100%;
-    text-align: center;
-    font-style: italic;
-    color: #aaaaaa;
+    margin: 0px;
+    padding: 0px;
+}
+
+.log-display .message-table {
+
+}
+
+.date-area {
+    color: #333333;
+    line-height: 3rem;
+    padding-left: 24px;
+    font-size: 16px;
+    float: left;
+}
+
+.control-area {
+    float: right;
+    padding-right: 24px;
+}
+
+.float-left {
+    float: left;
+}
+
+.float-left button {
+    margin-left: 20px;
+    background: #FFFFFF;
+    height: 28px;
+    font-size: 14px;
+    color: #333333;
+    line-height: 14px;
+    border: #CACACA solid 1px;
+}
+
+.float-left .dropdown-toggle::after {
+    margin-left: 10px;
+    vertical-align: 0.1em;
+    border-top: .5em solid #888888;
+}
+
+.message-table-header {
+    background-color: #EAEAEA;
+    border-bottom: #CACACA solid 1px;
+}
+
+.message-table-header th {
+    padding-left: 24px;
+    font-weight: bold;
+    font-family: Roboto;
+    border: 0px;
+}
+
+.message-table table {
+    /*display: block;*/
+    /*height: calc(100vh - 12rem);*/
+    /*overflow-y: scroll;*/
 }
