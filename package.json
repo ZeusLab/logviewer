@@ -11,7 +11,7 @@
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.1",
-    "react-window": "^1.8.5"
+    "recompose": "^0.30.0"
   },
   "scripts": {
     "format": "prettier --write",
@@ -41,6 +41,7 @@
     "customize-cra": "^0.9.1",
     "customize-cra-add-stylus-loader": "^0.0.3",
     "http-proxy-middleware": "^1.0.3",
+    "node-http-proxy-json": "^0.1.9",
     "prettier": "^2.0.5",
     "react-app-rewired": "^2.1.6",
     "styled-components": "^5.1.0",

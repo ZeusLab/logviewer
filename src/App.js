@@ -1,4 +1,4 @@
-import React, {PureComponent} from 'react';
+import React, {Component, PureComponent} from 'react';
 import {
     Container,
     Row,
@@ -9,7 +9,12 @@ import {
 } from 'react-bootstrap';
 import './App.css';
 import chainedFunction from 'chained-function';
-import {VariableSizeList} from 'react-window';
+import {
+    ListComponent,
+    withInfiniteScroll,
+    withLoading
+} from "./ListComponent";
+import {compose} from 'recompose';
 import "./index.styl";
 
 class MenuItem extends PureComponent {
@@ -128,34 +133,30 @@ class LeftMenu extends React.Component {
     }
 }
 
-
 class LogDisplayContent extends React.Component {
-
-    Row = ({index, style}) => (
-        <div style={style}>
-            {/* define the row component using items[index] */}
-        </div>
-    );
 
     constructor(props) {
         super(props);
         this.state = {
             data: [],
-            columns: [{
-                dataField: 'fluentd_time',
-                text: 'Timestamp',
-                headerStyle: {
-                    width: '20%',
-                }
-            }, {
-                dataField: 'message',
-                text: 'Message',
-            }],
         };
+        this.lastIndex = 0;
+    }
+
+    static getDerivedStateFromProps(props, state) {
+        if (props.application !== state.application
+            || props.date !== props.date) {
+            return {
+                data: [],
+                application: props.application,
+                date: props.date,
+            };
+        }
+        return null;
     }
 
     fetchingLog = (tag, date, id) => {
-        console.log("fetching log");
+        console.log('fetching log');
         let uri = encodeURI('tag=' + tag
             + '&date=' + date
             + '&id=' + id);
@@ -166,14 +167,8 @@ class LogDisplayContent extends React.Component {
             .then(responseJson => {
                 console.log(responseJson);
                 if (responseJson.code !== 200) {
-                    this.setState({
-                        data: [],
-                    });
                 } else {
-                    this.setState({
-                        data: responseJson.data,
-                    });
-
+                    this.onSetResult(responseJson.data);
                 }
             })
             .catch(error => {
@@ -183,11 +178,38 @@ class LogDisplayContent extends React.Component {
             })
     };
 
-    componentDidMount() {
-        this.reload();
-    }
+    onSetResult = (result) => {
+        console.log('-------- ' + result.length);
+        if (result.length === 0) {
+            return;
+        }
+        if (this.lastIndex === 0) {
+            this.setState({
+                data: result,
+            })
+        } else {
+            const arr = [...this.state.data, result]
+            this.setState({
+                data: arr,
+            })
+        }
+        this.lastIndex = result[result.length - 1].id;
+    };
 
-    reload = () => {
+    loadMore = () => {
+        console.log('load more');
+        const {
+            application,
+            date,
+        } = this.props;
+        if (date === undefined || date === "") {
+            return;
+        }
+        this.fetchingLog(application, date, this.lastIndex);
+    };
+
+    initialize = () => {
+        console.log('load first page');
         const {
             application,
             date,
@@ -196,62 +218,25 @@ class LogDisplayContent extends React.Component {
             return;
         }
         this.fetchingLog(application, date, 0);
-    }
-
-    componentDidUpdate(prevProps, prevState) {
-        console.log('did update application ', this.props, prevProps);
-        if (this.props.date !== prevProps.date) {
-            this.reload();
-        }
-    }
-
-    static getDerivedStateFromProps(props, state) {
-        console.log('get update application');
-        if (props.application !== state.application) {
-            return {
-                data: [],
-                application: props.application,
-            };
-        }
-
-        if (props.date !== state.date) {
-            return {
-                data: [],
-                date: props.date,
-            }
-        }
-        return null;
-    }
-
+    };
 
     render() {
-        const data = this.state.data;
-        console.log(data);
-        const columns = this.state.columns;
-        const options = {
-            container: true, // use this scrollable element as a container
-            initialState: {
-                firstItemIndex: 0, // show first ten items
-                lastItemIndex: 9,  // during initial render
-            },
-        };
+        const {
+            data,
+        } = this.state;
+
+        const ListWithLoadingWithInfinite = compose(
+            withInfiniteScroll,
+            withLoading,
+        )(ListComponent);
         return (
-            <div className="message-table">
-                <VariableSizeList
-                    height={500}
-                    width={500}
-                    itemCount={data.length}
-                    itemSize={100}
-                >
-                    {Row}
-                </VariableSizeList>
-                {/*<BootstrapTable*/}
-                {/*    keyField="id"*/}
-                {/*    data={data}*/}
-                {/*    columns={columns}*/}
-                {/*    bordered={false}*/}
-                {/*    headerClasses="message-table-header"*/}
-                {/*/>*/}
+            <div className="message-table" id="log-display-table">
+                <ListWithLoadingWithInfinite
+                    application={this.props.application}
+                    items={data}
+                    initialize={this.initialize}
+                    loadMore={this.loadMore}
+                />
             </div>
         )
     }
@@ -276,6 +261,7 @@ class LogDisplayHeader extends React.Component {
                 console.log(responseJson);
                 if (responseJson.code === 200) {
                     this.setState({
+                        currentDate: undefined,
                         histories: responseJson.data,
                     });
                 } else {
@@ -311,6 +297,7 @@ class LogDisplayHeader extends React.Component {
     }
 
     onDateSelected = (eventKey, eventObject) => {
+        console.log('select date key ' + eventKey + ' of application ' + this.props.application);
         this.props.onDateSelected(eventKey, eventObject);
         this.setState({
             currentDate: eventKey,
@@ -319,7 +306,13 @@ class LogDisplayHeader extends React.Component {
 
     render() {
         const histories = this.state.histories;
-        const title = this.state.currentDate === undefined ? "Select date" : this.state.currentDate;
+        const currentKey = this.state.currentDate === undefined ? "Select date" : this.state.currentDate;
+        let title = currentKey;
+        histories.forEach(value => {
+            if (value.key === currentKey) {
+                title = value.value;
+            }
+        });
         return (
             <div className="header">
                 <div className="date-area">
@@ -358,7 +351,6 @@ class LogDisplay extends React.Component {
     }
 
     onDateSelected = (eventKey, eventObject) => {
-        console.log(eventKey, eventObject);
         this.setState({
             date: eventKey,
         });
