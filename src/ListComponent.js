@@ -22,7 +22,6 @@ const withInfiniteScroll = (Component) =>
         }
 
         componentDidMount() {
-            console.log();
             document.getElementById('scroll-list').addEventListener('scroll', this.onScroll, false);
             if (this.props.items === undefined || this.props.items.length === 0) {
                 if (this.props.initialize !== undefined) {
@@ -50,6 +49,7 @@ const withInfiniteScroll = (Component) =>
         }
 
         render() {
+            console.log('re render WithInfiniteScroll');
             return <Component {...this.props} style={{height: 100, maxHeight: 100}} onscroll={this.onScroll}/>
         }
     };
@@ -59,8 +59,7 @@ const ListItem = (props) =>
 
 const ListComponent = ({application, items}) => {
     console.log(items);
-    const listItems = items.map((item) =>
-        // Correct! Key should be specified inside the array.
+    const listItems = items.map((item, index) =>
         <ListItem key={item.id} item={item}/>
     );
     return (

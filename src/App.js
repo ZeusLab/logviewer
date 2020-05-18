@@ -139,6 +139,8 @@ class LogDisplayContent extends React.Component {
         super(props);
         this.state = {
             data: [],
+            date: undefined,
+            application: undefined,
         };
         this.lastIndex = 0;
     }
@@ -156,7 +158,7 @@ class LogDisplayContent extends React.Component {
     }
 
     fetchingLog = (tag, date, id) => {
-        console.log('fetching log');
+        console.log('fetching log of app = ' + tag + ' on date ' + date + ' from id ' + id);
         let uri = encodeURI('tag=' + tag
             + '&date=' + date
             + '&id=' + id);
@@ -165,7 +167,6 @@ class LogDisplayContent extends React.Component {
                 return responseMsg.json();
             })
             .then(responseJson => {
-                console.log(responseJson);
                 if (responseJson.code !== 200) {
                 } else {
                     this.onSetResult(responseJson.data);
@@ -179,7 +180,6 @@ class LogDisplayContent extends React.Component {
     };
 
     onSetResult = (result) => {
-        console.log('-------- ' + result.length);
         if (result.length === 0) {
             return;
         }
@@ -197,7 +197,6 @@ class LogDisplayContent extends React.Component {
     };
 
     loadMore = () => {
-        console.log('load more');
         const {
             application,
             date,
@@ -209,7 +208,7 @@ class LogDisplayContent extends React.Component {
     };
 
     initialize = () => {
-        console.log('load first page');
+        this.lastIndex = 0;
         const {
             application,
             date,
@@ -341,8 +340,6 @@ class LogDisplayHeader extends React.Component {
 
 class LogDisplay extends React.Component {
 
-    state = {};
-
     constructor(props) {
         super(props);
         this.state = {
@@ -359,6 +356,7 @@ class LogDisplay extends React.Component {
     static getDerivedStateFromProps(props, state) {
         if (props.application !== state.application) {
             return {
+                date: undefined,
                 application: props.application,
             };
         }
@@ -372,7 +370,7 @@ class LogDisplay extends React.Component {
     render() {
         let app = this.props.application;
         if (app === undefined || app === "") {
-            return (<React.Fragment></React.Fragment>);
+            return (<React.Fragment/>);
         }
         return (
             <Card className="full-screen">
