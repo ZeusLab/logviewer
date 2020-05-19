@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import Moment from 'react-moment';
 
 const withLoading = (Component) =>
     class Loading extends React.Component {
@@ -49,18 +50,29 @@ const withInfiniteScroll = (Component) =>
         }
 
         render() {
-            console.log('re render WithInfiniteScroll');
             return <Component {...this.props} style={{height: 100, maxHeight: 100}} onscroll={this.onScroll}/>
         }
     };
 
-const ListItem = (props) =>
-    <div>{props.item.id} : {props.item.message}</div>
+const ListItem = (props) => {
+    return (
+        <div className="scroll-list-item">
+            <div className="timestamp">
+                <Moment format="YYYY-MM-DD HH:mm:ss,SSS">
+                    {props.item.fluentd_time}
+                </Moment>
+            </div>
+            <div className="message">{props.item.message}</div>
+            <div className="separated-line"/>
+        </div>
+    )
+};
+
 
 const ListComponent = ({application, items}) => {
     console.log(items);
     const listItems = items.map((item, index) =>
-        <ListItem key={item.id} item={item}/>
+        <ListItem key={item.id} item={item} index={index}/>
     );
     return (
         <div className="scroll-list" key={application} id="scroll-list">

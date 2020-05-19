@@ -230,12 +230,18 @@ class LogDisplayContent extends React.Component {
         )(ListComponent);
         return (
             <div className="message-table" id="log-display-table">
-                <ListWithLoadingWithInfinite
-                    application={this.props.application}
-                    items={data}
-                    initialize={this.initialize}
-                    loadMore={this.loadMore}
-                />
+                <div className="message-table-header">
+                    <div className="th timestamp">Timestamp</div>
+                    <div className="th message">Message</div>
+                </div>
+                <div className="scroll-list-container">
+                    <ListWithLoadingWithInfinite
+                        application={this.props.application}
+                        items={data}
+                        initialize={this.initialize}
+                        loadMore={this.loadMore}
+                    />
+                </div>
             </div>
         )
     }
