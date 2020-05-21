@@ -84,6 +84,21 @@ table {
     padding-right: 24px;
 }
 
+.control-area .icon {
+    padding: 12px;
+    color: #555555;
+    height: 3rem;
+    width: 3rem;
+    vertical-align: middle;
+}
+
+.control-area .refresh-area{
+    float: right;
+    color: #555555;
+    font-style: italic;
+    font-size: 12px;
+}
+
 .float-left {
     float: left;
 }

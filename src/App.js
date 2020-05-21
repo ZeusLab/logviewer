@@ -16,6 +16,12 @@ import {
 } from "./ListComponent";
 import {compose} from 'recompose';
 import "./index.styl";
+import {IconContext} from "react-icons";
+import {
+    BsSearch,
+    BsCloudDownload,
+    BsArrowRepeat
+} from "react-icons/bs";
 
 class MenuItem extends PureComponent {
 
@@ -338,6 +344,26 @@ class LogDisplayHeader extends React.Component {
                 </div>
 
                 <div className="control-area">
+                    <IconContext.Provider value={{className: 'icon search'}}>
+                        <React.Fragment>
+                            <BsSearch/>
+                        </React.Fragment>
+                    </IconContext.Provider>
+
+                    <IconContext.Provider value={{className: 'icon download'}}>
+                        <React.Fragment>
+                            <BsCloudDownload/>
+                        </React.Fragment>
+                    </IconContext.Provider>
+
+                    <div className="refresh-area">
+                        <IconContext.Provider value={{className: 'icon refresh'}}>
+                            <React.Fragment>
+                                <BsArrowRepeat/>
+                            </React.Fragment>
+                        </IconContext.Provider>
+                        <span>every seconds</span>
+                    </div>
                 </div>
             </div>
         );
