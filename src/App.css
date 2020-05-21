@@ -67,10 +67,6 @@ table {
     padding: 0px;
 }
 
-.log-display .message-table {
-
-}
-
 .date-area {
     color: #333333;
     line-height: 3rem;
@@ -92,11 +88,16 @@ table {
     vertical-align: middle;
 }
 
-.control-area .refresh-area{
+.control-area .refresh-area {
     float: right;
     color: #555555;
     font-style: italic;
     font-size: 12px;
+}
+
+.refresh-area {
+    border: 0px;
+    background: transparent;
 }
 
 .float-left {
@@ -117,6 +118,30 @@ table {
     margin-left: 15px;
     vertical-align: 0.1em;
     border-top: .5em solid #888888;
+}
+
+.float-right {
+    line-height: 3rem;
+}
+
+.float-right .dropdown-item {
+    font-size: 14px;
+    line-height: 32px;
+    padding: 4px 10px;
+    color: #555555;
+}
+
+.float-right button {
+    background: transparent;
+    border: 0px;
+    color: #555555;
+    font-style: italic;
+    font-size: 14px;
+}
+
+.float-right .dropdown-toggle::after {
+    vertical-align: 0.1em;
+    border-top: .0em solid #888888;
 }
 
 .interactions {

@@ -257,8 +257,39 @@ class LogDisplayHeader extends React.Component {
 
     constructor(props) {
         super(props);
+        this.refreshConfig = [
+            {
+                key: 0,
+                value: "Off",
+            },
+            {
+                key: 1,
+                value: "every second",
+            },
+            {
+                key: 5,
+                value: "every 5 seconds",
+            },
+            {
+                key: 10,
+                value: "every 10 seconds",
+            },
+            {
+                key: 15,
+                value: "every 15 seconds",
+            },
+            {
+                key: 30,
+                value: "every 30 seconds",
+            },
+            {
+                key: 60,
+                value: "every 60 seconds",
+            }
+        ];
         this.state = {
             currentDate: undefined,
+            refreshTime: 0,
             histories: []
         };
     }
@@ -315,6 +346,13 @@ class LogDisplayHeader extends React.Component {
         });
     };
 
+    onTimeRefreshSelected = (eventKey, eventObject) => {
+        console.log('select refresh time key ' + eventKey);
+        this.setState({
+            refreshTime: parseInt(eventKey, 10),
+        });
+    };
+
     render() {
         const histories = this.state.histories;
         const currentKey = this.state.currentDate === undefined ? "Select date" : this.state.currentDate;
@@ -322,6 +360,13 @@ class LogDisplayHeader extends React.Component {
         histories.forEach(value => {
             if (value.key === currentKey) {
                 title = value.value;
+            }
+        });
+        const currentRefreshTime = this.state.refreshTime;
+        let timeSelectedTitle = this.refreshConfig[0].value;
+        this.refreshConfig.forEach(value => {
+            if (value.key === currentRefreshTime) {
+                timeSelectedTitle = value.value;
             }
         });
         return (
@@ -357,12 +402,19 @@ class LogDisplayHeader extends React.Component {
                     </IconContext.Provider>
 
                     <div className="refresh-area">
-                        <IconContext.Provider value={{className: 'icon refresh'}}>
-                            <React.Fragment>
-                                <BsArrowRepeat/>
-                            </React.Fragment>
-                        </IconContext.Provider>
-                        <span>every seconds</span>
+                        <DropdownButton id="dropdown-basic-button"
+                                        className="float-right"
+                                        title={timeSelectedTitle}
+                                        onSelect={this.onTimeRefreshSelected}>
+                            {this.refreshConfig.map((value, index) => {
+                                return (
+                                    <Dropdown.Item key={value.key}
+                                                   eventKey={value.key}>
+                                        {value.value}
+                                    </Dropdown.Item>
+                                );
+                            })}
+                        </DropdownButton>
                     </div>
                 </div>
             </div>
