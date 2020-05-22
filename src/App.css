@@ -120,6 +120,15 @@ table {
     border-top: .5em solid #888888;
 }
 
+.action button{
+    background: transparent;
+    border: 0px;
+}
+
+.action .dropdown-toggle::after{
+    /*border: 0px;*/
+}
+
 .float-right {
     line-height: 3rem;
 }
