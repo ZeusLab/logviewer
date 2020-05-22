@@ -6,6 +6,9 @@ import {
     BsCloudDownload,
 } from "react-icons/bs";
 
+export const ACTION_TAIL = "tail";
+export const ACTION_HEAD = "head";
+
 export default class LogDisplayHeader extends React.Component {
 
     constructor(props) {
@@ -42,11 +45,11 @@ export default class LogDisplayHeader extends React.Component {
         ];
         this.actions = [
             {
-                key: "tail",
+                key: ACTION_TAIL,
                 value: "Tail"
             },
             {
-                key: "head",
+                key: ACTION_HEAD,
                 value: "Head"
             }
         ];
@@ -119,7 +122,7 @@ export default class LogDisplayHeader extends React.Component {
     };
 
     onActionSelected = (eventKey, eventObject) => {
-        console.log('select action' + eventKey);
+        console.log('select action ' + eventKey);
         this.setState({
             currentAction: eventKey,
         });

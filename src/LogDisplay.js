@@ -2,42 +2,42 @@ import React from "react";
 import {Card} from "react-bootstrap";
 import LogDisplayHeader from "./LogDisplayHeader";
 import LogDisplayContent from "./LogDisplayContent";
+import {ACTION_TAIL} from "./LogDisplayHeader";
 
 export default class LogDisplay extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            date: undefined,
-            action: 'tail',
-            refreshConfig: 0,
+            application: undefined,
         };
         this.displayContentRef = React.createRef();
     }
 
     onDateSelected = (eventKey, eventObject) => {
-        this.setState({
-            date: eventKey,
-        });
+        if (this.displayContentRef !== undefined) {
+            this.displayContentRef.current.changeDate(eventKey);
+        }
     };
 
     onActionSelected = (eventKey, eventObject) => {
-        this.setState({
-            action: eventKey,
-        });
+        if (this.displayContentRef !== undefined) {
+            this.displayContentRef.current.changeAction(eventKey);
+        }
     };
 
     onRefreshConfigSelected = (eventKey, eventObject) => {
-        this.setState({
-            refreshConfig: eventKey,
-        });
+        if (this.displayContentRef !== undefined) {
+            this.displayContentRef.current.setupRefresh(parseInt(eventKey, 10));
+        }
     };
 
     static getDerivedStateFromProps(props, state) {
         if (props.application !== state.application) {
             return {
-                date: undefined,
                 application: props.application,
+                date: undefined,
+                action: ACTION_TAIL,
             };
         }
         return null;
@@ -48,10 +48,15 @@ export default class LogDisplay extends React.Component {
     };
 
     render() {
-        let app = this.props.application;
+        const app = this.props.application;
         if (app === undefined || app === "") {
             return (<React.Fragment/>);
         }
+
+        const {
+            date,
+            action
+        } = this.state;
         return (
             <Card className="full-screen">
                 <Card.Body>
@@ -63,11 +68,12 @@ export default class LogDisplay extends React.Component {
                     />
                     <LogDisplayContent
                         application={app}
-                        ref={this.displayContentRef}
+                        date={date}
+                        action={action}
                         onLoadCompleted={this.onLoadMessageCompleted}
-                        date={this.state.date}
+
+                        ref={this.displayContentRef}
                         action={this.state.action}
-                        refresh={this.state.refreshConfig}
                     />
                 </Card.Body>
             </Card>

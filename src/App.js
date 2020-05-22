@@ -28,7 +28,7 @@ class App extends React.Component {
 
     onLoadCompleted = () => {
         console.log("loading complete");
-    }
+    };
 
     render() {
         return (
