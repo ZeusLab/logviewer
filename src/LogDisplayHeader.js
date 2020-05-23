@@ -7,7 +7,14 @@ import {
 } from "react-icons/bs";
 
 export const ACTION_TAIL = "tail";
-export const ACTION_HEAD = "head";
+export const ACTION_LESS = "less";
+export const REFRESH_OFF = 0,
+    REFRESH_1SECS = 1,
+    REFRESH_5SECS = 5,
+    REFRESH_10SECS = 10,
+    REFRESH_15SECS = 15,
+    REFRESH_30SECS = 30,
+    REFRESH_60SECS = 60;
 
 export default class LogDisplayHeader extends React.Component {
 
@@ -15,31 +22,31 @@ export default class LogDisplayHeader extends React.Component {
         super(props);
         this.refreshConfig = [
             {
-                key: 0,
+                key: REFRESH_OFF,
                 value: "Off",
             },
             {
-                key: 1,
+                key: REFRESH_1SECS,
                 value: "every second",
             },
             {
-                key: 5,
+                key: REFRESH_5SECS,
                 value: "every 5 seconds",
             },
             {
-                key: 10,
+                key: REFRESH_10SECS,
                 value: "every 10 seconds",
             },
             {
-                key: 15,
+                key: REFRESH_15SECS,
                 value: "every 15 seconds",
             },
             {
-                key: 30,
+                key: REFRESH_30SECS,
                 value: "every 30 seconds",
             },
             {
-                key: 60,
+                key: REFRESH_60SECS,
                 value: "every 60 seconds",
             }
         ];
@@ -49,14 +56,14 @@ export default class LogDisplayHeader extends React.Component {
                 value: "Tail"
             },
             {
-                key: ACTION_HEAD,
-                value: "Head"
+                key: ACTION_LESS,
+                value: "Less"
             }
         ];
         this.state = {
             currentDate: undefined,
             currentRefreshConfig: 0,
-            currentAction: this.actions[0].key,
+            currentAction: REFRESH_OFF,
             histories: []
         };
     }
@@ -92,6 +99,9 @@ export default class LogDisplayHeader extends React.Component {
 
     componentDidUpdate(prevProps, prevState) {
         if (this.props.application !== prevProps.application) {
+            this.setState({
+                currentRefreshConfig: REFRESH_OFF,
+            });
             this.fetchingHistories(this.props.application);
         }
     }
@@ -109,6 +119,7 @@ export default class LogDisplayHeader extends React.Component {
         console.log('select date key ' + eventKey + ' of application ' + this.props.application);
         this.setState({
             currentDate: eventKey,
+            currentRefreshConfig: REFRESH_OFF,
         });
         this.props.onDateSelected(eventKey, eventObject);
     };
@@ -125,7 +136,9 @@ export default class LogDisplayHeader extends React.Component {
         console.log('select action ' + eventKey);
         this.setState({
             currentAction: eventKey,
+            currentRefreshConfig: REFRESH_OFF,
         });
+        this.props.onRefreshConfigSelected(REFRESH_OFF, eventObject);
         this.props.onActionSelected(eventKey, eventObject);
     };
 
@@ -153,6 +166,7 @@ export default class LogDisplayHeader extends React.Component {
                 valueOfAction = value.value;
             }
         });
+        const hidden = currentAction === ACTION_LESS ? "float-right hidden" : "float-right";
         return (
             <div className="header">
                 <div className="date-area">
@@ -201,7 +215,7 @@ export default class LogDisplayHeader extends React.Component {
 
                     <div className="refresh-area">
                         <DropdownButton id="dropdown-basic-button"
-                                        className="float-right"
+                                        className={hidden}
                                         title={valueOfRefreshConfig}
                                         onSelect={this.onTimeRefreshSelected}>
                             {this.refreshConfig.map((value, index) => {

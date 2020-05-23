@@ -133,6 +133,10 @@ table {
     line-height: 3rem;
 }
 
+.hidden {
+    display: none;
+}
+
 .float-right .dropdown-item {
     font-size: 14px;
     line-height: 32px;

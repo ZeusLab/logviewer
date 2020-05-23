@@ -1,6 +1,6 @@
-import React from "react";
+import React, {useState} from "react";
 import Moment from "react-moment";
-import {ACTION_TAIL} from "./LogDisplayHeader";
+import {ACTION_LESS, ACTION_TAIL} from "./LogDisplayHeader";
 
 
 class List extends React.Component {
@@ -9,14 +9,25 @@ class List extends React.Component {
         super(props);
         this.state = {
             items: [],
-        }
+        };
     }
 
-    setDataSource = (items) => {
+    clearMessages = () => {
         this.setState({
-            items: items,
+            items: [],
         });
-        this.scrollToBottom();
+    };
+
+    addMessages = (items, scrollToBottom) => {
+        this.setState(state => {
+            const list = state.items.concat(...items);
+            return {
+                items: list,
+            }
+        });
+        if (scrollToBottom) {
+            this.scrollToBottom();
+        }
     };
 
     scrollToBottom = () => {
@@ -31,6 +42,7 @@ class List extends React.Component {
         const element = e.target;
         if (element.scrollHeight - element.scrollTop === element.clientHeight) {
             // do something at end of scroll
+            this.props.loadMore();
         }
         console.log(element.scrollHeight);
         console.log(element.scrollTop);
@@ -45,7 +57,6 @@ class List extends React.Component {
     };
 
     render() {
-        console.log('items:', this.state.items);
         if (this.state.items === undefined) {
             return (
                 <React.Fragment/>
@@ -81,19 +92,38 @@ export default class LogDisplayContent extends React.Component {
         this.state = {
             application: undefined,
         };
-        this.data = [];
         this.lastIndex = 0;
         this.currentDate = undefined;
         this.currentAction = ACTION_TAIL;
         this.list = React.createRef();
+        this.refresh = undefined;
     }
 
     setupRefresh = (value) => {
+        if (this.refresh !== undefined) {
+            clearInterval(this.refresh);
+            this.refresh = undefined;
+        }
+        if (value === 0) {
+            return;
+        }
+        this.refresh = setInterval(this.retrieveLog, value * 1000)
+    };
 
+    resetOption = () => {
+        this.lastIndex = 0;
+        if (this.list !== undefined) {
+            this.list.current.clearMessages();
+        }
+        this.currentAction = ACTION_TAIL;
+        this.currentDate = undefined;
     };
 
     changeDate = (date) => {
         if (date !== this.currentDate) {
+            if (this.refresh !== undefined) {
+                clearInterval(this.refresh);
+            }
             this.currentDate = date;
             this.lastIndex = 0;
             this.retrieveLog();
@@ -102,8 +132,17 @@ export default class LogDisplayContent extends React.Component {
 
     changeAction = (action) => {
         if (action !== this.currentAction) {
+            if (this.refresh !== undefined) {
+                clearInterval(this.refresh);
+            }
             this.currentAction = action;
             this.lastIndex = 0;
+            this.retrieveLog();
+        }
+    };
+
+    loadMore = () => {
+        if (this.currentAction === ACTION_LESS) {
             this.retrieveLog();
         }
     };
@@ -117,8 +156,11 @@ export default class LogDisplayContent extends React.Component {
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.application !== this.state.application) {
+            if (this.refresh !== undefined) {
+                clearInterval(this.refresh);
+            }
             if (this.list !== undefined) {
-                this.list.current.setDataSource([]);
+                this.list.current.clearMessages();
             }
             return;
         }
@@ -169,17 +211,11 @@ export default class LogDisplayContent extends React.Component {
         if (result.length === 0) {
             return;
         }
-        if (this.lastIndex === 0) {
-            this.data = result;
-        } else {
-            if (this.state.action === 'tail') {
-                this.data = [...this.data, result];
-            } else {
-                this.data = [...result, this.data];
-            }
-        }
         if (this.list !== undefined) {
-            this.list.current.setDataSource(this.data);
+            if (this.lastIndex === 0) {
+                this.list.current.clearMessages();
+            }
+            this.list.current.addMessages(result, this.currentAction === ACTION_TAIL);
         }
         this.lastIndex = result[result.length - 1].id;
     };
@@ -193,6 +229,7 @@ export default class LogDisplayContent extends React.Component {
                 </div>
                 <div className="scroll-list-container">
                     <List ref={this.list}
+                          loadMore={this.loadMore}
                           action={this.state.action}/>
                 </div>
             </div>

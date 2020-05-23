@@ -32,6 +32,14 @@ export default class LogDisplay extends React.Component {
         }
     };
 
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (prevProps.application !== this.props.application) {
+            if (this.displayContentRef !== undefined) {
+                this.displayContentRef.current.resetOption();
+            }
+        }
+    }
+
     static getDerivedStateFromProps(props, state) {
         if (props.application !== state.application) {
             return {
