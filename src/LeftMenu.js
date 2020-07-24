@@ -3,7 +3,6 @@ import chainedFunction from "chained-function";
 import MenuItem from "./MenuItem";
 
 export default class LeftMenu extends React.Component {
-
     constructor(props) {
         super(props);
         this.state = {

@@ -6,10 +6,7 @@ import {
     BsCloudDownload,
 } from "react-icons/bs";
 
-export const ACTION_TAIL = "tail";
-export const ACTION_LESS = "less";
 export const REFRESH_OFF = 0,
-    REFRESH_1SECS = 1,
     REFRESH_5SECS = 5,
     REFRESH_10SECS = 10,
     REFRESH_15SECS = 15,
@@ -24,10 +21,6 @@ export default class LogDisplayHeader extends React.Component {
             {
                 key: REFRESH_OFF,
                 value: "Off",
-            },
-            {
-                key: REFRESH_1SECS,
-                value: "every second",
             },
             {
                 key: REFRESH_5SECS,
@@ -50,20 +43,9 @@ export default class LogDisplayHeader extends React.Component {
                 value: "every 60 seconds",
             }
         ];
-        this.actions = [
-            {
-                key: ACTION_TAIL,
-                value: "Tail"
-            },
-            {
-                key: ACTION_LESS,
-                value: "Less"
-            }
-        ];
         this.state = {
             currentDate: undefined,
-            currentRefreshConfig: 0,
-            currentAction: REFRESH_OFF,
+            currentRefreshConfig: REFRESH_OFF,
             histories: []
         };
     }
@@ -116,7 +98,6 @@ export default class LogDisplayHeader extends React.Component {
     }
 
     onDateSelected = (eventKey, eventObject) => {
-        console.log('select date key ' + eventKey + ' of application ' + this.props.application);
         this.setState({
             currentDate: eventKey,
             currentRefreshConfig: REFRESH_OFF,
@@ -125,21 +106,13 @@ export default class LogDisplayHeader extends React.Component {
     };
 
     onTimeRefreshSelected = (eventKey, eventObject) => {
-        console.log('select refresh time key ' + eventKey);
+        if (eventKey === undefined || !eventKey) {
+            eventKey = REFRESH_OFF
+        }
         this.setState({
             currentRefreshConfig: parseInt(eventKey, 10),
         });
         this.props.onRefreshConfigSelected(eventKey, eventObject);
-    };
-
-    onActionSelected = (eventKey, eventObject) => {
-        console.log('select action ' + eventKey);
-        this.setState({
-            currentAction: eventKey,
-            currentRefreshConfig: REFRESH_OFF,
-        });
-        this.props.onRefreshConfigSelected(REFRESH_OFF, eventObject);
-        this.props.onActionSelected(eventKey, eventObject);
     };
 
     render() {
@@ -158,15 +131,6 @@ export default class LogDisplayHeader extends React.Component {
                 valueOfRefreshConfig = value.value;
             }
         });
-
-        const currentAction = this.state.currentAction;
-        let valueOfAction = this.actions[0].value;
-        this.actions.forEach(value => {
-            if (value.key === currentAction) {
-                valueOfAction = value.value;
-            }
-        });
-        const hidden = currentAction === ACTION_LESS ? "float-right hidden" : "float-right";
         return (
             <div className="header">
                 <div className="date-area">
@@ -176,20 +140,6 @@ export default class LogDisplayHeader extends React.Component {
                                     title={title}
                                     onSelect={this.onDateSelected}>
                         {histories.map((value, index) => {
-                            return (
-                                <Dropdown.Item key={value.key}
-                                               eventKey={value.key}>
-                                    {value.value}
-                                </Dropdown.Item>
-                            );
-                        })}
-                    </DropdownButton>
-
-                    <DropdownButton id="dropdown-basic-button"
-                                    className="float-left action"
-                                    title={valueOfAction}
-                                    onSelect={this.onActionSelected}>
-                        {this.actions.map((value, index) => {
                             return (
                                 <Dropdown.Item key={value.key}
                                                eventKey={value.key}>
@@ -215,7 +165,7 @@ export default class LogDisplayHeader extends React.Component {
 
                     <div className="refresh-area">
                         <DropdownButton id="dropdown-basic-button"
-                                        className={hidden}
+                                        className="float-right"
                                         title={valueOfRefreshConfig}
                                         onSelect={this.onTimeRefreshSelected}>
                             {this.refreshConfig.map((value, index) => {

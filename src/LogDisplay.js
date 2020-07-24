@@ -2,7 +2,6 @@ import React from "react";
 import {Card} from "react-bootstrap";
 import LogDisplayHeader from "./LogDisplayHeader";
 import LogDisplayContent from "./LogDisplayContent";
-import {ACTION_TAIL} from "./LogDisplayHeader";
 
 export default class LogDisplay extends React.Component {
 
@@ -45,7 +44,6 @@ export default class LogDisplay extends React.Component {
             return {
                 application: props.application,
                 date: undefined,
-                action: ACTION_TAIL,
             };
         }
         return null;
@@ -63,7 +61,6 @@ export default class LogDisplay extends React.Component {
 
         const {
             date,
-            action
         } = this.state;
         return (
             <Card className="full-screen">
@@ -77,7 +74,6 @@ export default class LogDisplay extends React.Component {
                     <LogDisplayContent
                         application={app}
                         date={date}
-                        action={action}
                         onLoadCompleted={this.onLoadMessageCompleted}
 
                         ref={this.displayContentRef}
