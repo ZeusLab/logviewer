@@ -177,10 +177,6 @@ export default class LogDisplayContent extends React.Component {
     render() {
         return (
             <div className="message-table" id="log-display-table">
-                <div className="message-table-header">
-                    <div className="th timestamp">Timestamp</div>
-                    <div className="th message">Message</div>
-                </div>
                 <div className="scroll-list-container">
                     <List ref={this.list}
                           action={this.state.action}/>

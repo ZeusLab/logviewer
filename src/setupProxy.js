@@ -205,7 +205,7 @@ const onLogResponse = function (proxyRes, req, res) {
 
 module.exports = function (app) {
     app.use(
-        '/api/applications',
+        '/api/tag',
         createProxyMiddleware({
             // add athena back end address
             target: 'http://localhost:28081',

@@ -34,15 +34,24 @@ table {
 }
 
 .header, .footer {
-    min-height: 4rem;
+    max-height: 4rem;
+    height: 4rem;
     font-size: calc(10px + 2vmin);
     color: white;
 }
 
 .footer {
-    position: absolute;
     bottom: 0;
     width: 100%;
+    padding-left: 24px;
+    padding-right: 24px;
+}
+
+.footer span {
+    float: right;
+    color: #333333;
+    font-size: 14px;
+    line-height: 4rem;
 }
 
 .log-viewer {
@@ -54,10 +63,45 @@ table {
     /*padding-right: 16px;*/
 }
 
-.log-display .header {
+.log-display-header {
+    font-size: calc(10px + 2vmin);
+    color: white;
     background-color: #F5F5F5;
     min-height: 3.3rem;
     border-bottom: #E3E3E3 solid 1px;
+}
+
+.log-display-header .zero-padding{
+    padding: 0px;
+    margin: 0px;
+}
+
+.log-display .header-toolbar {
+    background-color: #EAEAEA;
+    height: 2.2rem;
+    border-bottom: #E3E3E3 solid 1px;
+    padding-left: 16px;
+    padding-right: 16px;
+    width: 100%;
+    float: left;
+}
+
+.header-toolbar .query-explanation {
+    color: #333333;
+    font-size: 14px;
+    vertical-align: middle;
+    line-height: 2rem;
+    max-height: 2.2rem;
+    float: left;
+}
+
+.header-toolbar .actions {
+    float: right;
+    max-height: 2.2rem;
+}
+
+.header-toolbar .actions .btn-link {
+    font-size: 14px;
 }
 
 .log-display .card-body {
@@ -72,11 +116,9 @@ table {
     line-height: 3rem;
     padding-left: 16px;
     font-size: 16px;
-    float: left;
 }
 
 .control-area {
-    float: right;
     padding-right: 16px;
 }
 
@@ -88,27 +130,15 @@ table {
     vertical-align: middle;
 }
 
-.control-area button{
+.control-area button {
     border: 0px;
 }
 
-/*.control-area .refresh-area {*/
-/*    float: right;*/
-/*    color: #555555;*/
-/*    font-style: italic;*/
-/*    font-size: 12px;*/
-/*}*/
-
-/*.refresh-area {*/
-/*    border: 0px;*/
-/*    background: transparent;*/
-/*}*/
-
-.float-left {
+.dropdown-float-left {
     float: left;
 }
 
-.float-left button {
+.dropdown-float-left button {
     background: #FFFFFF;
     height: 28px;
     font-size: 14px;
@@ -117,19 +147,16 @@ table {
     border: #CACACA solid 1px;
 }
 
-.float-left .dropdown-toggle::after {
+.dropdown-float-left .dropdown-toggle::after {
     margin-left: 15px;
     vertical-align: 0.1em;
     border-top: .5em solid #888888;
 }
 
-.action button {
-    background: transparent;
-    border: 0px;
-}
-
-.action .dropdown-toggle::after {
-    /*border: 0px;*/
+.dropdown-item {
+    height: 3rem;
+    vertical-align: middle;
+    padding: 0px 16px;
 }
 
 .float-right {
@@ -164,36 +191,18 @@ table {
     text-align: center;
 }
 
-
 .message-table {
-    height: calc(100% - 3rem);
+    height: calc(100% - 5.5rem);
     width: 100%;
-}
-
-.message-table-header {
-    background-color: #EAEAEA;
-    border-bottom: #CACACA solid 1px;
-    height: 3rem;
-    display: flex;
-}
-
-.message-table-header .th {
-    height: 100%;
-    line-height: 3rem;
-    font-weight: bold;
-    padding-left: 24px;
-}
-
-.message-table-header .timestamp {
-    width: 15%;
+    float: left;
 }
 
 .scroll-list-container {
-    height: calc(100% - 3rem);
+    height: calc(100% - 0rem);
 }
 
 .scroll-list {
-    height: 98%;
+    height: 100%;
     display: block;
     overflow-y: scroll;
     /*overflow: hidden;*/
