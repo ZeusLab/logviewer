@@ -2,50 +2,74 @@ import React from "react";
 import {Dropdown, DropdownButton} from "react-bootstrap";
 import {IconContext} from "react-icons";
 import {
-    BsSearch,
-    BsCloudDownload,
+    BsArrowClockwise,
+    BsPlayFill,
 } from "react-icons/bs";
 
-export const REFRESH_OFF = 0,
-    REFRESH_5SECS = 5,
-    REFRESH_10SECS = 10,
-    REFRESH_15SECS = 15,
-    REFRESH_30SECS = 30,
-    REFRESH_60SECS = 60;
+export const TIME_LAST1HOUR = 1,
+    TIME_LAST6HOUR = 6,
+    TIME_LAST12HOUR = 12,
+    TIME_CUSTOM = 999;
+
+export const LOG_LEVEL_ALL = "ALL",
+    LOG_LEVEL_DEBUG = "DEBUG",
+    LOG_LEVEL_INFO = "INFO",
+    LOG_LEVEL_WARN = "WARN",
+    LOG_LEVEL_ERROR = "ERROR",
+    LOG_LEVEL_FATAL = "FATAL";
+
 
 export default class LogDisplayHeader extends React.Component {
 
     constructor(props) {
         super(props);
-        this.refreshConfig = [
+        this.logSeverities = [
             {
-                key: REFRESH_OFF,
-                value: "Off",
+                key: LOG_LEVEL_ALL,
+                value: "Any log level"
             },
             {
-                key: REFRESH_5SECS,
-                value: "every 5 seconds",
+                key: LOG_LEVEL_DEBUG,
+                value: "Debug"
             },
             {
-                key: REFRESH_10SECS,
-                value: "every 10 seconds",
+                key: LOG_LEVEL_INFO,
+                value: "Info"
             },
             {
-                key: REFRESH_15SECS,
-                value: "every 15 seconds",
+                key: LOG_LEVEL_WARN,
+                value: "Warning"
             },
             {
-                key: REFRESH_30SECS,
-                value: "every 30 seconds",
+                key: LOG_LEVEL_ERROR,
+                value: "Error"
             },
             {
-                key: REFRESH_60SECS,
-                value: "every 60 seconds",
+                key: LOG_LEVEL_FATAL,
+                value: "Fatal"
             }
-        ];
+        ]
+        this.rangeOfTime = [
+            {
+                key: TIME_LAST1HOUR,
+                value: "Last hour"
+            },
+            {
+                key: TIME_LAST6HOUR,
+                value: "Last 6 hour"
+            },
+            {
+                key: TIME_LAST12HOUR,
+                value: "Last 12 hour"
+            },
+            {
+                key: TIME_CUSTOM,
+                value: "Custom"
+            }
+        ]
         this.state = {
             currentDate: undefined,
-            currentRefreshConfig: REFRESH_OFF,
+            currentRefreshConfig: 0,
             histories: []
         };
     }
@@ -82,7 +106,7 @@ export default class LogDisplayHeader extends React.Component {
     componentDidUpdate(prevProps, prevState) {
         if (this.props.application !== prevProps.application) {
             this.setState({
-                currentRefreshConfig: REFRESH_OFF,
+                currentRefreshConfig: 0,
             });
             this.fetchingHistories(this.props.application);
         }
@@ -97,49 +121,52 @@ export default class LogDisplayHeader extends React.Component {
         return null;
     }
 
-    onDateSelected = (eventKey, eventObject) => {
-        this.setState({
-            currentDate: eventKey,
-            currentRefreshConfig: REFRESH_OFF,
-        });
-        this.props.onDateSelected(eventKey, eventObject);
-    };
+    onLogLevelSelected = (eventKey, eventObject) => {
 
-    onTimeRefreshSelected = (eventKey, eventObject) => {
-        if (eventKey === undefined || !eventKey) {
-            eventKey = REFRESH_OFF
-        }
-        this.setState({
-            currentRefreshConfig: parseInt(eventKey, 10),
-        });
-        this.props.onRefreshConfigSelected(eventKey, eventObject);
-    };
+    }
+
+    onApplicationSelected = (eventKey, eventOpbject) => {
+
+    }
+
+    onRefreshClick = () => {
+        console.log('click refresh');
+    }
 
     render() {
-        const histories = this.state.histories;
-        const currentKey = this.state.currentDate === undefined ? "Select date" : this.state.currentDate;
-        let title = currentKey;
-        histories.forEach(value => {
-            if (value.key === currentKey) {
-                title = value.value;
-            }
-        });
-        const currentRefreshTime = this.state.currentRefreshConfig;
-        let valueOfRefreshConfig = this.refreshConfig[0].value;
-        this.refreshConfig.forEach(value => {
-            if (value.key === currentRefreshTime) {
-                valueOfRefreshConfig = value.value;
-            }
-        });
+        let applicationTitle = "Select application"
+        let logSeverityTitle = this.logSeverities[0].value;
+        let rangeTitle = this.rangeOfTime[0].value;
         return (
             <div className="header">
-                <div className="date-area">
-                    <span className="float-left">Date </span>
+                <div className="dropdown-area">
                     <DropdownButton id="dropdown-basic-button"
                                     className="float-left"
-                                    title={title}
-                                    onSelect={this.onDateSelected}>
-                        {histories.map((value, index) => {
+                                    title={applicationTitle}
+                                    onSelect={this.onApplicationSelected}>
+                    </DropdownButton>
+                </div>
+                <div className="dropdown-area">
+                    <DropdownButton id="dropdown-basic-button"
+                                    className="float-left"
+                                    title={logSeverityTitle}
+                                    onSelect={this.onLogLevelSelected}>
+                        {this.logSeverities.map((value, index) => {
+                            return (
+                                <Dropdown.Item key={value.key}
+                                               eventKey={value.key}>
+                                    {value.value}
+                                </Dropdown.Item>
+                            );
+                        })}
+                    </DropdownButton>
+                </div>
+                <div className="dropdown-area">
+                    <DropdownButton id="dropdown-basic-button"
+                                    className="float-left"
+                                    title={rangeTitle}
+                                    onSelect={this.onApplicationSelected}>
+                        {this.rangeOfTime.map((value, index) => {
                             return (
                                 <Dropdown.Item key={value.key}
                                                eventKey={value.key}>
@@ -151,33 +178,17 @@ export default class LogDisplayHeader extends React.Component {
                 </div>
 
                 <div className="control-area">
-                    <IconContext.Provider value={{className: 'icon search'}}>
-                        <React.Fragment>
-                            <BsSearch/>
-                        </React.Fragment>
+                    <IconContext.Provider value={{className: 'icon refresh'}}>
+                        <button onClick={this.onRefreshClick}>
+                            <BsArrowClockwise/>
+                        </button>
                     </IconContext.Provider>
 
-                    <IconContext.Provider value={{className: 'icon download'}}>
-                        <React.Fragment>
-                            <BsCloudDownload/>
-                        </React.Fragment>
+                    <IconContext.Provider value={{className: 'icon stream'}}>
+                        <button onClick={this.onRefreshClick}>
+                            <BsPlayFill/>
+                        </button>
                     </IconContext.Provider>
-
-                    <div className="refresh-area">
-                        <DropdownButton id="dropdown-basic-button"
-                                        className="float-right"
-                                        title={valueOfRefreshConfig}
-                                        onSelect={this.onTimeRefreshSelected}>
-                            {this.refreshConfig.map((value, index) => {
-                                return (
-                                    <Dropdown.Item key={value.key}
-                                                   eventKey={value.key}>
-                                        {value.value}
-                                    </Dropdown.Item>
-                                );
-                            })}
-                        </DropdownButton>
-                    </div>
                 </div>
             </div>
         );

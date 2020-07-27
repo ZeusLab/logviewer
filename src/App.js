@@ -37,11 +37,10 @@ class App extends React.Component {
                 </header>
                 <Container fluid>
                     <Row>
-                        <Col mx={2} lg={2} xl={2}>
-                            <LeftMenu onAppSelected={this.onAppSelected}/>
-                        </Col>
-
-                        <Col mx={10} lg={10} xl={10}>
+                        {/*<Col mx={2} lg={2} xl={2}>*/}
+                        {/*    <LeftMenu onAppSelected={this.onAppSelected}/>*/}
+                        {/*</Col>*/}
+                        <Col mx={12} lg={12} xl={12}>
                             <div className="log-display">
                                 <LogDisplay
                                     application={this.state.application}

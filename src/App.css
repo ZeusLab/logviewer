@@ -8,11 +8,11 @@ html, body {
     margin: 0px;
     height: 100%;
     width: 100%;
-    font-family: Roboto;
+    font-family: Arial;
 }
 
 body {
-    background-color: #2D3848;
+    background-color: #FFF;
 }
 
 table {
@@ -51,12 +51,12 @@ table {
 }
 
 .log-display {
-    padding-right: 16px;
+    /*padding-right: 16px;*/
 }
 
 .log-display .header {
     background-color: #F5F5F5;
-    min-height: 3rem;
+    min-height: 3.3rem;
     border-bottom: #E3E3E3 solid 1px;
 }
 
@@ -67,17 +67,17 @@ table {
     padding: 0px;
 }
 
-.date-area {
+.dropdown-area {
     color: #333333;
     line-height: 3rem;
-    padding-left: 24px;
+    padding-left: 16px;
     font-size: 16px;
     float: left;
 }
 
 .control-area {
     float: right;
-    padding-right: 24px;
+    padding-right: 16px;
 }
 
 .control-area .icon {
@@ -88,24 +88,27 @@ table {
     vertical-align: middle;
 }
 
-.control-area .refresh-area {
-    float: right;
-    color: #555555;
-    font-style: italic;
-    font-size: 12px;
+.control-area button{
+    border: 0px;
 }
 
-.refresh-area {
-    border: 0px;
-    background: transparent;
-}
+/*.control-area .refresh-area {*/
+/*    float: right;*/
+/*    color: #555555;*/
+/*    font-style: italic;*/
+/*    font-size: 12px;*/
+/*}*/
+
+/*.refresh-area {*/
+/*    border: 0px;*/
+/*    background: transparent;*/
+/*}*/
 
 .float-left {
     float: left;
 }
 
 .float-left button {
-    margin-left: 20px;
     background: #FFFFFF;
     height: 28px;
     font-size: 14px;
@@ -120,12 +123,12 @@ table {
     border-top: .5em solid #888888;
 }
 
-.action button{
+.action button {
     background: transparent;
     border: 0px;
 }
 
-.action .dropdown-toggle::after{
+.action .dropdown-toggle::after {
     /*border: 0px;*/
 }
 

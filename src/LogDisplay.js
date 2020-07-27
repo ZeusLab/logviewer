@@ -13,52 +13,52 @@ export default class LogDisplay extends React.Component {
         this.displayContentRef = React.createRef();
     }
 
-    onDateSelected = (eventKey, eventObject) => {
-        if (this.displayContentRef !== undefined) {
-            this.displayContentRef.current.changeDate(eventKey);
-        }
-    };
-
-    onActionSelected = (eventKey, eventObject) => {
-        if (this.displayContentRef !== undefined) {
-            this.displayContentRef.current.changeAction(eventKey);
-        }
-    };
-
-    onRefreshConfigSelected = (eventKey, eventObject) => {
-        if (this.displayContentRef !== undefined) {
-            this.displayContentRef.current.setupRefresh(parseInt(eventKey, 10));
-        }
-    };
-
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        if (prevProps.application !== this.props.application) {
-            if (this.displayContentRef !== undefined) {
-                this.displayContentRef.current.resetOption();
-            }
-        }
-    }
-
-    static getDerivedStateFromProps(props, state) {
-        if (props.application !== state.application) {
-            return {
-                application: props.application,
-                date: undefined,
-            };
-        }
-        return null;
-    }
-
-    onLoadMessageCompleted = () => {
-        this.props.onLoadCompleted();
-    };
+    // onDateSelected = (eventKey, eventObject) => {
+    //     if (this.displayContentRef !== undefined) {
+    //         this.displayContentRef.current.changeDate(eventKey);
+    //     }
+    // };
+    //
+    // onActionSelected = (eventKey, eventObject) => {
+    //     if (this.displayContentRef !== undefined) {
+    //         this.displayContentRef.current.changeAction(eventKey);
+    //     }
+    // };
+    //
+    // onRefreshConfigSelected = (eventKey, eventObject) => {
+    //     if (this.displayContentRef !== undefined) {
+    //         this.displayContentRef.current.setupRefresh(parseInt(eventKey, 10));
+    //     }
+    // };
+    //
+    // componentDidUpdate(prevProps, prevState, snapshot) {
+    //     if (prevProps.application !== this.props.application) {
+    //         if (this.displayContentRef !== undefined) {
+    //             this.displayContentRef.current.resetOption();
+    //         }
+    //     }
+    // }
+    //
+    // static getDerivedStateFromProps(props, state) {
+    //     if (props.application !== state.application) {
+    //         return {
+    //             application: props.application,
+    //             date: undefined,
+    //         };
+    //     }
+    //     return null;
+    // }
+    //
+    // onLoadMessageCompleted = () => {
+    //     this.props.onLoadCompleted();
+    // };
 
     render() {
         const app = this.props.application;
-        if (app === undefined || app === "") {
-            return (<React.Fragment/>);
-        }
-
+        // if (app === undefined || app === "") {
+        //     return (<React.Fragment/>);
+        // }
+        //
         const {
             date,
         } = this.state;
@@ -67,17 +67,17 @@ export default class LogDisplay extends React.Component {
                 <Card.Body>
                     <LogDisplayHeader
                         application={app}
-                        onDateSelected={this.onDateSelected}
-                        onRefreshConfigSelected={this.onRefreshConfigSelected}
-                        onActionSelected={this.onActionSelected}
+                        // onDateSelected={this.onDateSelected}
+                        // onRefreshConfigSelected={this.onRefreshConfigSelected}
+                        // onActionSelected={this.onActionSelected}
                     />
                     <LogDisplayContent
                         application={app}
                         date={date}
-                        onLoadCompleted={this.onLoadMessageCompleted}
-
-                        ref={this.displayContentRef}
-                        action={this.state.action}
+                        // onLoadCompleted={this.onLoadMessageCompleted}
+                        //
+                        // ref={this.displayContentRef}
+                        // action={this.state.action}
                     />
                 </Card.Body>
             </Card>

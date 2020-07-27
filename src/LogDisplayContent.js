@@ -80,7 +80,7 @@ export default class LogDisplayContent extends React.Component {
             clearInterval(this.refresh);
             this.refresh = undefined;
         }
-        if (value === REFRESH_OFF) {
+        if (value === 0) {
             return;
         }
         this.refresh = setInterval(this.retrieveLog, value * 1000)
