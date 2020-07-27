@@ -11,7 +11,7 @@ export default class LogDisplay extends React.Component {
     }
 
     // onDateSelected = (eventKey, eventObject) => {
-    //     if (this.displayContentRef !== undefined) {
+    //     if (this.displayContentRef !== undefined) {log-viewer
     //         this.displayContentRef.current.changeDate(eventKey);
     //     }
     // };

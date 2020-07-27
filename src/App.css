@@ -4,11 +4,11 @@
 }
 
 html, body {
-    padding: 0px;
-    margin: 0px;
+    padding: 0;
+    margin: 0;
     height: 100%;
     width: 100%;
-    font-family: Arial;
+    /*font-family: Arial;*/
 }
 
 body {
@@ -20,7 +20,7 @@ table {
 }
 
 .full-screen {
-    height: calc(100vh - 8rem);
+    height: calc(100vh - 7rem);
 }
 
 .app {
@@ -33,7 +33,7 @@ table {
     }
 }
 
-.header, .footer {
+.header {
     max-height: 4rem;
     height: 4rem;
     font-size: calc(10px + 2vmin);
@@ -45,19 +45,29 @@ table {
     width: 100%;
     padding-left: 24px;
     padding-right: 24px;
+    max-height: 3rem;
+    height: 3rem;
+    font-size: calc(10px + 2vmin);
+    color: white;
+}
+
+.logo {
+    height: 4rem;
+    padding: 4px;
+    width: 15%;
 }
 
 .footer span {
     float: right;
     color: #333333;
     font-size: 14px;
-    line-height: 4rem;
+    line-height: 3rem;
 }
 
-.log-viewer {
-    min-height: calc(100% - 80px);
-    background-color: #ffffff;
-}
+/*.log-viewer {*/
+/*    min-height: calc(100% - 80px);*/
+/*    background-color: #ffffff;*/
+/*}*/
 
 .log-display {
     /*padding-right: 16px;*/
@@ -71,7 +81,7 @@ table {
     border-bottom: #E3E3E3 solid 1px;
 }
 
-.log-display-header .zero-padding{
+.log-display-header .zero-padding {
     padding: 0px;
     margin: 0px;
 }
@@ -134,20 +144,28 @@ table {
     border: 0px;
 }
 
-.dropdown-float-left {
-    float: left;
-}
-
-.dropdown-float-left button {
+.dropdown-button button, .dropdown-button input {
     background: #FFFFFF;
     height: 28px;
-    font-size: 14px;
+    font-size: 16px;
     color: #333333;
     line-height: 14px;
     border: #CACACA solid 1px;
 }
 
-.dropdown-float-left .dropdown-toggle::after {
+.dropdown-button input {
+    max-width: 100%;
+    border-radius: .25rem;
+    padding: .375rem .75rem;
+    margin-top: 11px;
+}
+
+.dropdown-button svg {
+    margin-top: -3px;
+    margin-left: -24px;
+}
+
+.dropdown-button .dropdown-toggle::after {
     margin-left: 15px;
     vertical-align: 0.1em;
     border-top: .5em solid #888888;
