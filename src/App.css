@@ -79,11 +79,12 @@ table {
     background-color: #F5F5F5;
     min-height: 3.3rem;
     border-bottom: #E3E3E3 solid 1px;
+    padding: 0.6rem 0 0 0;
 }
 
 .log-display-header .zero-padding {
-    padding: 0px;
-    margin: 0px;
+    padding: 0;
+    margin: 0;
 }
 
 .log-display .header-toolbar {
@@ -123,17 +124,52 @@ table {
 
 .dropdown-area {
     color: #333333;
-    line-height: 3rem;
     padding-left: 16px;
     font-size: 16px;
 }
 
+.selection-button {
+    display: inline-table;
+    padding-left: 16px;
+}
+
+.ui.fluid.dropdown.dropdown-single, .ui.fluid.dropdown.dropdown-multi {
+    min-height: 28px;
+    height: 28px;
+    font-size: 16px;
+    min-width: 200px;
+    margin: 0;
+    padding: 5px 16px;
+}
+
+.ui.fluid.dropdown.dropdown-multi {
+    padding: 3px 24px 4px 16px;
+}
+
+.ui.multiple.dropdown > .label {
+    padding: 4px;
+    margin: 0 4px 0 0;
+    font-size: 12px;
+}
+
+.ui.fluid.dropdown > .dropdown.icon {
+    padding: 0;
+    top: 0;
+    line-height: 0;
+    margin: .9rem 0 0 0;
+}
+
+.ui.multiple.dropdown > .text {
+    margin: 0;
+}
+
 .control-area {
     padding-right: 16px;
+    margin-top: -0.6rem;
 }
 
 .control-area .icon {
-    padding: 12px;
+    padding: 10px;
     color: #555555;
     height: 3rem;
     width: 3rem;
@@ -141,7 +177,7 @@ table {
 }
 
 .control-area button {
-    border: 0px;
+    border: 0;
 }
 
 .dropdown-button button, .dropdown-button input {
@@ -151,13 +187,14 @@ table {
     color: #333333;
     line-height: 14px;
     border: #CACACA solid 1px;
+    margin-top: 0;
 }
 
 .dropdown-button input {
     max-width: 100%;
     border-radius: .25rem;
     padding: .375rem .75rem;
-    margin-top: 11px;
+    margin-top: 0;
 }
 
 .dropdown-button svg {
