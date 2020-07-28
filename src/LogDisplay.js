@@ -56,7 +56,7 @@ export default class LogDisplay extends React.Component {
             <Card className="full-screen">
                 <Card.Body>
                     <LogDisplayHeader/>
-                    {/*<LogDisplayContent/>*/}
+                    <LogDisplayContent/>
                 </Card.Body>
             </Card>
         )

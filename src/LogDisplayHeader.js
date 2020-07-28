@@ -14,21 +14,68 @@ import {
 
 import Flatpickr from "react-flatpickr";
 import Emitter from './services/emitter';
-import DropdownMultipleSelection from './DropdownMultipleSelection';
 import DropdownSingleSelection from './DropdownSingleSelection';
+import QueryExplanation from "./QueryExplanation";
 
 export const TIME_LAST1HOUR = "1",
 	TIME_LAST6HOUR = "6",
 	TIME_LAST12HOUR = "12",
 	TIME_CUSTOM = "999";
 
-export const LOG_LEVEL_ALL = "ALL",
-	LOG_LEVEL_DEBUG = "DEBUG",
-	LOG_LEVEL_INFO = "INFO",
-	LOG_LEVEL_WARN = "WARN",
-	LOG_LEVEL_ERROR = "ERROR",
-	LOG_LEVEL_FATAL = "FATAL";
+export const LOG_LEVEL_ALL = 0,
+	LOG_LEVEL_DEBUG = 100,
+	LOG_LEVEL_INFO = 200,
+	LOG_LEVEL_WARN = 300,
+	LOG_LEVEL_ERROR = 400,
+	LOG_LEVEL_CRITICAL = 500,
+	LOG_LEVEL_ALERT = 600,
+	LOG_LEVEL_EMERGENCY = 700;
 
+export const LogLevelStr = (logLevel) => {
+	switch (logLevel) {
+		case LOG_LEVEL_EMERGENCY:
+			return "emergency";
+		case LOG_LEVEL_ALERT:
+			return "alert";
+		case LOG_LEVEL_CRITICAL:
+			return "critical";
+		case LOG_LEVEL_ERROR:
+			return "error";
+		case LOG_LEVEL_WARN:
+			return "warning";
+		case LOG_LEVEL_INFO:
+			return "info";
+		case LOG_LEVEL_DEBUG:
+			return "debug";
+		case LOG_LEVEL_ALL:
+		default:
+			return "";
+	}
+};
+
+export const TimeOptionString = (timeOption) => {
+	switch (timeOption) {
+		case TIME_LAST12HOUR:
+			return "the last 12 hours";
+		case TIME_LAST6HOUR:
+			return "the last 6 hours";
+		case TIME_CUSTOM:
+			return "";
+		case TIME_LAST1HOUR:
+		default:
+			return "the last hour";
+	}
+};
+// DEFAULT	(0) The log entry has no assigned severity level.
+// DEBUG	(100) Debug or trace information.
+// INFO	(200) Routine information, such as ongoing status or performance.
+// NOTICE	(300) Normal but significant events, such as start up, shut down, or a configuration change.
+// WARNING	(400) Warning events might cause problems.
+// ERROR	(500) Error events are likely to cause problems.
+// CRITICAL	(600) Critical events cause more severe problems or outages.
+// ALERT	(700) A person must take an action immediately.
+// EMERGENCY	(800) One or more systems are unusable.
+// Showing <b>{level}<b> logs of <b>{application}<b> from <b>the last hour</b>
 
 export default class LogDisplayHeader extends React.Component {
 	
@@ -38,9 +85,11 @@ export default class LogDisplayHeader extends React.Component {
 			{key: LOG_LEVEL_ALL, text: 'Any log level', value: LOG_LEVEL_ALL},
 			{key: LOG_LEVEL_DEBUG, text: 'Debug', value: LOG_LEVEL_DEBUG},
 			{key: LOG_LEVEL_INFO, text: 'Info', value: LOG_LEVEL_INFO},
-			{key: LOG_LEVEL_WARN, text: 'Warn', value: LOG_LEVEL_WARN},
+			{key: LOG_LEVEL_WARN, text: 'Warning', value: LOG_LEVEL_WARN},
 			{key: LOG_LEVEL_ERROR, text: 'Error', value: LOG_LEVEL_ERROR},
-			{key: LOG_LEVEL_FATAL, text: 'Fatal', value: LOG_LEVEL_FATAL},
+			{key: LOG_LEVEL_CRITICAL, text: 'Critical', value: LOG_LEVEL_CRITICAL},
+			{key: LOG_LEVEL_ALERT, text: 'Alert', value: LOG_LEVEL_ALERT},
+			{key: LOG_LEVEL_EMERGENCY, text: 'Emergency', value: LOG_LEVEL_EMERGENCY},
 		];
 		this.rangeOfTime = [
 			{key: TIME_LAST1HOUR, text: 'Last hour', value: TIME_LAST1HOUR},
@@ -51,7 +100,8 @@ export default class LogDisplayHeader extends React.Component {
 		this.state = {
 			tags: [],
 			currentTag: undefined,
-			timeOption: this.rangeOfTime[0].value,
+			currentTimeOption: this.rangeOfTime[0].value,
+			currentLogLevels: LOG_LEVEL_ALL,
 			date: new Date()
 		};
 	}
@@ -108,14 +158,24 @@ export default class LogDisplayHeader extends React.Component {
 	//     return null;
 	// }
 	
-	onLogLevelSelected = (eventKey, eventObject) => {
-		Emitter.emit('LogLevel', eventKey);
+	onLogLevelChange = (event, data) => {
+		//Emitter.emit('LogLevel', data);
+		this.setState({
+			currentLogLevels: data.value,
+		});
 	};
 	
-	onApplicationSelected = (eventKey, eventOpbject) => {
+	onTimeRangeChange = (event, data) => {
+		this.setState({
+			currentTimeOption: data.value,
+		})
+		;
 	};
 	
-	onTimeRangeChanged = (value) => {
+	onTagChange = (event, data) => {
+		this.setState({
+			currentTag: data.value,
+		});
 	};
 	
 	onRefreshClick = () => {
@@ -124,34 +184,41 @@ export default class LogDisplayHeader extends React.Component {
 	onPlayClick = () => {
 	};
 	
-	handleEvent(event, picker) {
-		console.log(picker.startDate);
-	}
-	
-	handleCallback(start, end, label) {
-		console.log(start, end, label);
-	}
-	
 	render() {
-		let logSeverityTitle = this.logSeverities[0].value;
-		let rangeTitle = this.rangeOfTime[0].value;
-		const {date} = this.state;
 		const {
 			tags,
+			date,
+			currentTag,
+			currentTimeOption,
+			currentLogLevels,
 		} = this.state;
+		
+		const hideCustomRange = (currentTimeOption !== TIME_CUSTOM);
 		return (
 			<div>
 				<div className="log-display-header">
 					<div className="selection-button float-left">
-						<DropdownSingleSelection options={tags}/>
+						<DropdownSingleSelection
+							placeHolder="Select application"
+							onChange={this.onTagChange}
+							value={currentTag}
+							options={tags}/>
 					</div>
 					<div className="selection-button float-left">
-						<DropdownMultipleSelection options={this.logSeverities}/>
+						<DropdownSingleSelection
+							placeHolder="Select log level"
+							value={currentLogLevels}
+							onChange={this.onLogLevelChange}
+							options={this.logSeverities}/>
 					</div>
 					<div className="dropdown-area float-left">
-						<DropdownSingleSelection options={this.rangeOfTime}/>
+						<DropdownSingleSelection
+							placeHolder="Select time"
+							value={currentTimeOption}
+							onChange={this.onTimeRangeChange}
+							options={this.rangeOfTime}/>
 					</div>
-					<div className="dropdown-area float-left">
+					<div className="dropdown-area float-left" hidden={hideCustomRange}>
 						<div className="dropdown-button dropdown">
 							<Flatpickr
 								data-enable-time
@@ -163,7 +230,7 @@ export default class LogDisplayHeader extends React.Component {
 							<FcCalendar/>
 						</div>
 					</div>
-					<div className="dropdown-area float-left">
+					<div className="dropdown-area float-left" hidden={hideCustomRange}>
 						<div className="dropdown-button dropdown">
 							<Flatpickr
 								data-enable-time
@@ -190,9 +257,13 @@ export default class LogDisplayHeader extends React.Component {
 				</div>
 				
 				<div className="header-toolbar">
-					<div className="query-explanation">
-						<span>Showing logs from <b>the last hour</b> at 11:01 AM (EDT)</span>
-					</div>
+					{/*<div className="query-explanation">*/}
+					{/*	<span>Showing logs from <b>the last hour</b> at 11:01 AM (EDT)</span>*/}
+					{/*</div>*/}
+					<QueryExplanation
+						tag={currentTag}
+						logLevel={currentLogLevels}
+						timeOption={currentTimeOption}/>
 					<div className="actions">
 						<Button variant="link" className="zero-padding"><b>Download logs</b></Button>
 					</div>
