@@ -1,15 +1,15 @@
 import "flatpickr/dist/themes/light.css";
 import React from "react";
 import {
-    Button
+	Button
 } from "react-bootstrap";
 import {IconContext} from "react-icons";
 import {
-    BsArrowClockwise,
-    BsPlayFill,
+	BsArrowClockwise,
+	BsPlayFill,
 } from "react-icons/bs";
 import {
-    FcCalendar,
+	FcCalendar,
 } from "react-icons/fc";
 
 import Flatpickr from "react-flatpickr";
@@ -19,55 +19,55 @@ import QueryExplanation from "./QueryExplanation";
 import moment from "moment";
 
 export const TIME_LAST1HOUR = 1,
-    TIME_LAST6HOUR = 6,
-    TIME_LAST12HOUR = 12,
-    TIME_CUSTOM = 1000;
+	TIME_LAST6HOUR = 6,
+	TIME_LAST12HOUR = 12,
+	TIME_CUSTOM = 1000;
 
 export const LOG_LEVEL_ALL = 0,
-    LOG_LEVEL_DEBUG = 100,
-    LOG_LEVEL_INFO = 200,
-    LOG_LEVEL_WARN = 300,
-    LOG_LEVEL_ERROR = 400,
-    LOG_LEVEL_CRITICAL = 500,
-    LOG_LEVEL_ALERT = 600,
-    LOG_LEVEL_EMERGENCY = 700;
+	LOG_LEVEL_DEBUG = 100,
+	LOG_LEVEL_INFO = 200,
+	LOG_LEVEL_WARN = 300,
+	LOG_LEVEL_ERROR = 400,
+	LOG_LEVEL_CRITICAL = 500,
+	LOG_LEVEL_ALERT = 600,
+	LOG_LEVEL_EMERGENCY = 700;
 
 export const LogLevelStr = (logLevel) => {
-    switch (logLevel) {
-        case LOG_LEVEL_EMERGENCY:
-            return "emergency";
-        case LOG_LEVEL_ALERT:
-            return "alert";
-        case LOG_LEVEL_CRITICAL:
-            return "critical";
-        case LOG_LEVEL_ERROR:
-            return "error";
-        case LOG_LEVEL_WARN:
-            return "warning";
-        case LOG_LEVEL_INFO:
-            return "info";
-        case LOG_LEVEL_DEBUG:
-            return "debug";
-        case LOG_LEVEL_ALL:
-        default:
-            return "";
-    }
+	switch (logLevel) {
+		case LOG_LEVEL_EMERGENCY:
+			return "emergency";
+		case LOG_LEVEL_ALERT:
+			return "alert";
+		case LOG_LEVEL_CRITICAL:
+			return "critical";
+		case LOG_LEVEL_ERROR:
+			return "error";
+		case LOG_LEVEL_WARN:
+			return "warning";
+		case LOG_LEVEL_INFO:
+			return "info";
+		case LOG_LEVEL_DEBUG:
+			return "debug";
+		case LOG_LEVEL_ALL:
+		default:
+			return "";
+	}
 };
 
 export const TimeOptionString = (timeOption, start, end) => {
-    switch (timeOption) {
-        case TIME_LAST12HOUR:
-            return "the last 12 hours";
-        case TIME_LAST6HOUR:
-            return "the last 6 hours";
-        case TIME_CUSTOM:
-            const s = moment(start).format('YYYY/MM/DD HH:mm');
-            const e = moment(end).format('YYYY/MM/DD HH:mm');
-            return `${s} to ${e}`;
-        case TIME_LAST1HOUR:
-        default:
-            return "the last hour";
-    }
+	switch (timeOption) {
+		case TIME_LAST12HOUR:
+			return "the last 12 hours";
+		case TIME_LAST6HOUR:
+			return "the last 6 hours";
+		case TIME_CUSTOM:
+			const s = moment(start).format('YYYY/MM/DD HH:mm');
+			const e = moment(end).format('YYYY/MM/DD HH:mm');
+			return `${s} to ${e}`;
+		case TIME_LAST1HOUR:
+		default:
+			return "the last hour";
+	}
 };
 // DEFAULT	(0) The log entry has no assigned severity level.
 // DEBUG	(100) Debug or trace information.
@@ -79,201 +79,211 @@ export const TimeOptionString = (timeOption, start, end) => {
 // ALERT	(700) A person must take an action immediately.
 // EMERGENCY	(800) One or more systems are unusable.
 // Showing <b>{level}<b> logs of <b>{application}<b> from <b>the last hour</b>
+export const DateToYYYYMMDDHHmm = (date) => {
+	return moment(date).format("YYYY-MM-DD HH:mm");
+};
 
 export default class LogDisplayHeader extends React.Component {
-
-    constructor(props) {
-        super(props);
-        this.logSeverities = [
-            {key: LOG_LEVEL_ALL, text: 'Any log level', value: LOG_LEVEL_ALL},
-            {key: LOG_LEVEL_DEBUG, text: 'Debug', value: LOG_LEVEL_DEBUG},
-            {key: LOG_LEVEL_INFO, text: 'Info', value: LOG_LEVEL_INFO},
-            {key: LOG_LEVEL_WARN, text: 'Warning', value: LOG_LEVEL_WARN},
-            {key: LOG_LEVEL_ERROR, text: 'Error', value: LOG_LEVEL_ERROR},
-            {key: LOG_LEVEL_CRITICAL, text: 'Critical', value: LOG_LEVEL_CRITICAL},
-            {key: LOG_LEVEL_ALERT, text: 'Alert', value: LOG_LEVEL_ALERT},
-            {key: LOG_LEVEL_EMERGENCY, text: 'Emergency', value: LOG_LEVEL_EMERGENCY},
-        ];
-        this.rangeOfTime = [
-            {key: TIME_LAST1HOUR, text: 'Last hour', value: TIME_LAST1HOUR},
-            {key: TIME_LAST6HOUR, text: 'Last 6 hours', value: TIME_LAST6HOUR},
-            {key: TIME_LAST12HOUR, text: 'Last 12 hours', value: TIME_LAST12HOUR},
-            {key: TIME_CUSTOM, text: 'Custom', value: TIME_CUSTOM},
-        ];
-        this.state = {
-            tags: [],
-            currentTag: undefined,
-            currentTimeOption: this.rangeOfTime[0].value,
-            currentLogLevels: LOG_LEVEL_ALL,
-            startDate: new Date(),
-            endDate: new Date(),
-        };
-    }
-
-    fetchingTag = () => {
-        fetch("/api/tag")
-            .then(responseMsg => {
-                return responseMsg.json();
-            })
-            .then(responseJson => {
-                if (responseJson.code === 200) {
-                    let arr = [];
-                    responseJson.data.forEach((item) => {
-                        arr.push({
-                            key: item,
-                            text: item,
-                            value: item,
-                        });
-                    });
-                    this.setState({
-                        tags: arr,
-                    })
-                } else {
-                    /**
-                     * alert log
-                     */
-                }
-            })
-            .catch(error => {
-            })
-            .finally(() => {
-            })
-    };
-
-    componentDidMount() {
-        this.fetchingTag();
-    }
-
-    onLogLevelChange = (event, data) => {
-        //Emitter.emit('LogLevel', data);
-        this.setState({
-            currentLogLevels: data.value,
-        });
-    };
-
-    onTimeRangeChange = (event, data) => {
-        this.setState({
-            currentTimeOption: data.value,
-        });
-    };
-
-    onTagChange = (event, data) => {
-        this.setState({
-            currentTag: data.value,
-        });
-    };
-
-    onStartTimeSelected = (selectedDates, dateStr, instance) => {
-        this.setState({
-            startDate: selectedDates[0],
-        })
-    }
-
-    onEndTimeSelected = (selectedDates, dateStr, instance) => {
-        this.setState({
-            endDate: selectedDates[0],
-        })
-    }
-
-    onRefreshClick = () => {
-    };
-
-    onPlayClick = () => {
-    };
-
-    render() {
-        const {
-            tags,
-            startDate,
-            endDate,
-            currentTag,
-            currentTimeOption,
-            currentLogLevels,
-        } = this.state;
-        const offCustomRange = (currentTimeOption !== TIME_CUSTOM);
-        const disabled = (currentTag === undefined);
-        const maxDate = moment().format("YYYY-MM-DD HH:mm");
-        return (
-            <div>
-                <div className="log-display-header">
-                    <div className="selection-button float-left">
-                        <DropdownSingleSelection
-                            placeHolder="Select application"
-                            onChange={this.onTagChange}
-                            value={currentTag}
-                            options={tags}/>
-                    </div>
-                    <div className="selection-button float-left">
-                        <DropdownSingleSelection
-                            placeHolder="Select log level"
-                            value={currentLogLevels}
-                            disabled={disabled}
-                            onChange={this.onLogLevelChange}
-                            options={this.logSeverities}/>
-                    </div>
-                    <div className="dropdown-area float-left">
-                        <DropdownSingleSelection
-                            placeHolder="Select time"
-                            value={currentTimeOption}
-                            disabled={disabled}
-                            onChange={this.onTimeRangeChange}
-                            options={this.rangeOfTime}/>
-                    </div>
-                    <div className="dropdown-area float-left" hidden={offCustomRange}>
-                        <div className="dropdown-button dropdown">
-                            <Flatpickr
-                                data-enable-time
-                                value={startDate}
-                                options={{
-                                    dateFormat: "Y-m-d H:i",
-                                    maxDate: maxDate,
-                                }}
-                                onChange={this.onStartTimeSelected}
-                            />
-                            <FcCalendar/>
-                        </div>
-                    </div>
-                    <div className="dropdown-area float-left" hidden={offCustomRange}>
-                        <div className="dropdown-button dropdown">
-                            <Flatpickr
-                                data-enable-time
-                                value={endDate}
-                                options={{
-                                    dateFormat: "Y-m-d H:i",
-                                    maxDate: maxDate,
-                                }}
-                                onChange={this.onEndTimeSelected}
-                            />
-                            <FcCalendar/>
-                        </div>
-                    </div>
-                    <div className="control-area float-right">
-                        <IconContext.Provider value={{className: 'icon refresh'}}>
-                            <Button onClick={this.onRefreshClick} variant="link" size="sm" className="zero-padding">
-                                <BsArrowClockwise/>
-                            </Button>
-                        </IconContext.Provider>
-                        <IconContext.Provider value={{className: 'icon stream'}} size="sm">
-                            <Button onClick={this.onPlayClick} variant="link" className="zero-padding">
-                                <BsPlayFill/>
-                            </Button>
-                        </IconContext.Provider>
-                    </div>
-                </div>
-
-                <div className="header-toolbar">
-                    <QueryExplanation
-                        tag={currentTag}
-                        logLevel={currentLogLevels}
-                        startTime={startDate}
-                        endTime={endDate}
-                        timeOption={currentTimeOption}/>
-                    <div className="actions">
-                        <Button variant="link" className="zero-padding"><b>Download logs</b></Button>
-                    </div>
-                </div>
-            </div>
-
-        );
-    }
+	
+	constructor(props) {
+		super(props);
+		this.logSeverities = [
+			{key: LOG_LEVEL_ALL, text: 'Any log level', value: LOG_LEVEL_ALL},
+			{key: LOG_LEVEL_DEBUG, text: 'Debug', value: LOG_LEVEL_DEBUG},
+			{key: LOG_LEVEL_INFO, text: 'Info', value: LOG_LEVEL_INFO},
+			{key: LOG_LEVEL_WARN, text: 'Warning', value: LOG_LEVEL_WARN},
+			{key: LOG_LEVEL_ERROR, text: 'Error', value: LOG_LEVEL_ERROR},
+			{key: LOG_LEVEL_CRITICAL, text: 'Critical', value: LOG_LEVEL_CRITICAL},
+			{key: LOG_LEVEL_ALERT, text: 'Alert', value: LOG_LEVEL_ALERT},
+			{key: LOG_LEVEL_EMERGENCY, text: 'Emergency', value: LOG_LEVEL_EMERGENCY},
+		];
+		this.rangeOfTime = [
+			{key: TIME_LAST1HOUR, text: 'Last hour', value: TIME_LAST1HOUR},
+			{key: TIME_LAST6HOUR, text: 'Last 6 hours', value: TIME_LAST6HOUR},
+			{key: TIME_LAST12HOUR, text: 'Last 12 hours', value: TIME_LAST12HOUR},
+			{key: TIME_CUSTOM, text: 'Custom', value: TIME_CUSTOM},
+		];
+		const now = new Date();
+		this.state = {
+			tags: [],
+			currentTag: undefined,
+			currentTimeOption: this.rangeOfTime[0].value,
+			currentLogLevels: LOG_LEVEL_ALL,
+			startDate: now,
+			startDateStr: DateToYYYYMMDDHHmm(now),
+			endDate: now,
+			endDateStr: DateToYYYYMMDDHHmm(now),
+		};
+	}
+	
+	fetchingTag = () => {
+		fetch("/api/tag")
+			.then(responseMsg => {
+				return responseMsg.json();
+			})
+			.then(responseJson => {
+				if (responseJson.code === 200) {
+					let arr = [];
+					responseJson.data.forEach((item) => {
+						arr.push({
+							key: item,
+							text: item,
+							value: item,
+						});
+					});
+					this.setState({
+						tags: arr,
+					})
+				} else {
+					/**
+					 * alert log
+					 */
+				}
+			})
+			.catch(error => {
+			})
+			.finally(() => {
+			})
+	};
+	
+	componentDidMount() {
+		this.fetchingTag();
+	}
+	
+	onLogLevelChange = (event, data) => {
+		//Emitter.emit('LogLevel', data);
+		this.setState({
+			currentLogLevels: data.value,
+		});
+	};
+	
+	onTimeRangeChange = (event, data) => {
+		this.setState({
+			currentTimeOption: data.value,
+		});
+	};
+	
+	onTagChange = (event, data) => {
+		this.setState({
+			currentTag: data.value,
+		});
+	};
+	
+	onStartTimeSelected = (selectedDates, dateStr, instance) => {
+		this.setState({
+			startDate: selectedDates[0],
+			startDateStr: DateToYYYYMMDDHHmm(selectedDates[0]),
+		})
+	}
+	
+	onEndTimeSelected = (selectedDates, dateStr, instance) => {
+		this.setState({
+			endDate: selectedDates[0],
+			endDateStr: DateToYYYYMMDDHHmm(selectedDates[0]),
+		})
+	}
+	
+	onRefreshClick = () => {
+	};
+	
+	onPlayClick = () => {
+	};
+	
+	render() {
+		const {
+			tags,
+			startDate,
+			startDateStr,
+			endDate,
+			endDateStr,
+			currentTag,
+			currentTimeOption,
+			currentLogLevels,
+		} = this.state;
+		const offCustomRange = (currentTimeOption !== TIME_CUSTOM);
+		const disabled = (currentTag === undefined);
+		const maxDate = moment().format("YYYY-MM-DD HH:mm");
+		return (
+			<div>
+				<div className="log-display-header">
+					<div className="selection-button float-left">
+						<DropdownSingleSelection
+							placeHolder="Select application"
+							onChange={this.onTagChange}
+							value={currentTag}
+							options={tags}/>
+					</div>
+					<div className="selection-button float-left">
+						<DropdownSingleSelection
+							placeHolder="Select log level"
+							value={currentLogLevels}
+							disabled={disabled}
+							onChange={this.onLogLevelChange}
+							options={this.logSeverities}/>
+					</div>
+					<div className="dropdown-area float-left">
+						<DropdownSingleSelection
+							placeHolder="Select time"
+							value={currentTimeOption}
+							disabled={disabled}
+							onChange={this.onTimeRangeChange}
+							options={this.rangeOfTime}/>
+					</div>
+					<div className="dropdown-area float-left" hidden={offCustomRange}>
+						<div className="dropdown-button dropdown">
+							<Flatpickr
+								data-enable-time
+								value={startDateStr}
+								options={{
+									dateFormat: "Y-m-d H:i",
+									maxDate: maxDate,
+								}}
+								onChange={this.onStartTimeSelected}
+							/>
+							<FcCalendar/>
+						</div>
+					</div>
+					<div className="dropdown-area float-left" hidden={offCustomRange}>
+						<div className="dropdown-button dropdown">
+							<Flatpickr
+								data-enable-time
+								value={endDateStr}
+								options={{
+									dateFormat: "Y-m-d H:i",
+									maxDate: maxDate,
+								}}
+								onChange={this.onEndTimeSelected}
+							/>
+							<FcCalendar/>
+						</div>
+					</div>
+					<div className="control-area float-right">
+						<IconContext.Provider value={{className: 'icon refresh'}}>
+							<Button onClick={this.onRefreshClick} variant="link" size="sm" className="zero-padding">
+								<BsArrowClockwise/>
+							</Button>
+						</IconContext.Provider>
+						<IconContext.Provider value={{className: 'icon stream'}} size="sm">
+							<Button onClick={this.onPlayClick} variant="link" className="zero-padding">
+								<BsPlayFill/>
+							</Button>
+						</IconContext.Provider>
+					</div>
+				</div>
+				
+				<div className="header-toolbar">
+					<QueryExplanation
+						tag={currentTag}
+						logLevel={currentLogLevels}
+						startTime={startDate}
+						endTime={endDate}
+						timeOption={currentTimeOption}/>
+					<div className="actions">
+						<Button variant="link" className="zero-padding"><b>Download logs</b></Button>
+					</div>
+				</div>
+			</div>
+		
+		);
+	}
 }

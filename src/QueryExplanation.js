@@ -18,7 +18,7 @@ function QueryExplanation(props) {
         )
     }
     const now = moment().format('MMMM Do YYYY, HH:mm:ss');
-    const str = `Showing <b>${logLevel}</b> log messages of <b>${tag}</b> logs from <b>${timeOption}</b> at ${now}`;
+    const str = `Showing <b>${logLevel}</b> log messages of <b>${tag}</b> from <b>${timeOption}</b> at ${now}`;
     return (
         <div className="query-explanation">
             <div dangerouslySetInnerHTML={{__html: str}}/>
