@@ -31,6 +31,15 @@ export const LOG_LEVEL_ALL = 0,
 	LOG_LEVEL_CRITICAL = 500,
 	LOG_LEVEL_ALERT = 600,
 	LOG_LEVEL_EMERGENCY = 700;
+// DEFAULT	(0) The log entry has no assigned severity level.
+// DEBUG	(100) Debug or trace information.
+// INFO	(200) Routine information, such as ongoing status or performance.
+// NOTICE	(300) Normal but significant events, such as start up, shut down, or a configuration change.
+// WARNING	(400) Warning events might cause problems.
+// ERROR	(500) Error events are likely to cause problems.
+// CRITICAL	(600) Critical events cause more severe problems or outages.
+// ALERT	(700) A person must take an action immediately.
+// EMERGENCY	(800) One or more systems are unusable.
 
 export const LogLevelStr = (logLevel) => {
 	switch (logLevel) {
@@ -69,16 +78,7 @@ export const TimeOptionString = (timeOption, start, end) => {
 			return "the last hour";
 	}
 };
-// DEFAULT	(0) The log entry has no assigned severity level.
-// DEBUG	(100) Debug or trace information.
-// INFO	(200) Routine information, such as ongoing status or performance.
-// NOTICE	(300) Normal but significant events, such as start up, shut down, or a configuration change.
-// WARNING	(400) Warning events might cause problems.
-// ERROR	(500) Error events are likely to cause problems.
-// CRITICAL	(600) Critical events cause more severe problems or outages.
-// ALERT	(700) A person must take an action immediately.
-// EMERGENCY	(800) One or more systems are unusable.
-// Showing <b>{level}<b> logs of <b>{application}<b> from <b>the last hour</b>
+
 export const DateToYYYYMMDDHHmm = (date) => {
 	return moment(date).format("YYYY-MM-DD HH:mm");
 };
@@ -108,7 +108,7 @@ export default class LogDisplayHeader extends React.Component {
 			tags: [],
 			currentTag: undefined,
 			currentTimeOption: this.rangeOfTime[0].value,
-			currentLogLevels: LOG_LEVEL_ALL,
+			currentLogLevel: LOG_LEVEL_ALL,
 			startDate: now,
 			startDateStr: DateToYYYYMMDDHHmm(now),
 			endDate: now,
@@ -151,32 +151,46 @@ export default class LogDisplayHeader extends React.Component {
 	}
 	
 	onLogLevelChange = (event, data) => {
-		//Emitter.emit('LogLevel', data);
+		Emitter.emit('query', {
+			logLevel: data.value,
+		});
 		this.setState({
-			currentLogLevels: data.value,
+			currentLogLevel: data.value,
 		});
 	};
 	
 	onTimeRangeChange = (event, data) => {
+		Emitter.emit('query', {
+			timeOption: data.value,
+		});
 		this.setState({
 			currentTimeOption: data.value,
 		});
 	};
 	
 	onTagChange = (event, data) => {
+		Emitter.emit('query', {
+			tag: data.value,
+		});
 		this.setState({
 			currentTag: data.value,
 		});
 	};
 	
 	onStartTimeSelected = (selectedDates, dateStr, instance) => {
+		Emitter.emit('query', {
+			startDate: selectedDates[0],
+		});
 		this.setState({
 			startDate: selectedDates[0],
 			startDateStr: DateToYYYYMMDDHHmm(selectedDates[0]),
 		})
-	}
+	};
 	
 	onEndTimeSelected = (selectedDates, dateStr, instance) => {
+		Emitter.emit('query', {
+			endDate: selectedDates[0],
+		});
 		this.setState({
 			endDate: selectedDates[0],
 			endDateStr: DateToYYYYMMDDHHmm(selectedDates[0]),
@@ -184,9 +198,15 @@ export default class LogDisplayHeader extends React.Component {
 	}
 	
 	onRefreshClick = () => {
+		Emitter.emit('query', {
+			action: 'refresh',
+		});
 	};
 	
 	onPlayClick = () => {
+		Emitter.emit('query', {
+			action: 'play',
+		});
 	};
 	
 	render() {
@@ -198,7 +218,7 @@ export default class LogDisplayHeader extends React.Component {
 			endDateStr,
 			currentTag,
 			currentTimeOption,
-			currentLogLevels,
+			currentLogLevel,
 		} = this.state;
 		const offCustomRange = (currentTimeOption !== TIME_CUSTOM);
 		const disabled = (currentTag === undefined);
@@ -216,7 +236,7 @@ export default class LogDisplayHeader extends React.Component {
 					<div className="selection-button float-left">
 						<DropdownSingleSelection
 							placeHolder="Select log level"
-							value={currentLogLevels}
+							value={currentLogLevel}
 							disabled={disabled}
 							onChange={this.onLogLevelChange}
 							options={this.logSeverities}/>
@@ -274,7 +294,7 @@ export default class LogDisplayHeader extends React.Component {
 				<div className="header-toolbar">
 					<QueryExplanation
 						tag={currentTag}
-						logLevel={currentLogLevels}
+						logLevel={currentLogLevel}
 						startTime={startDate}
 						endTime={endDate}
 						timeOption={currentTimeOption}/>

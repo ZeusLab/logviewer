@@ -1,6 +1,7 @@
 import React from "react";
 import Moment from "react-moment";
 import Emitter from './services/emitter';
+import Socket from "./services/socket";
 
 class List extends React.Component {
 	
@@ -68,60 +69,128 @@ export default class LogDisplayContent extends React.Component {
 		super(props);
 		this.state = {
 			application: undefined,
+			connected: false,
+			socket: undefined,
 		};
-		this.lastIndex = 0;
-		this.currentDate = undefined;
 		this.list = React.createRef();
-		this.refresh = undefined;
 	}
-	
-	// componentDidUpdate(prevProps, prevState, snapshot) {
-	//     if (prevProps.application !== this.state.application) {
-	//         if (this.refresh !== undefined) {
-	//             clearInterval(this.refresh);
-	//         }
-	//         if (this.list !== undefined) {
-	//             this.list.current.clearMessages();
-	//         }
-	//         return;
-	//     }
-	//     this.lastIndex = 0;
-	//     this.retrieveLog();
-	// }
-	//
-	// static getDerivedStateFromProps(props, state) {
-	//     if (props.application !== state.application) {
-	//         return {
-	//             data: [],
-	//             application: props.application,
-	//             date: undefined,
-	//         };
-	//     }
-	//     return null;
-	// }
-	//
-	// onSetResult = (result) => {
-	//     if (result.length === 0) {
-	//         return;
-	//     }
-	//     if (this.list !== undefined) {
-	//         if (this.lastIndex === 0) {
-	//             this.list.current.clearMessages();
-	//         }
-	//         this.list.current.addMessages(result, true);
-	//     }
-	//     this.lastIndex = result[result.length - 1].id;
-	// };
 	
 	componentDidMount() {
-		Emitter.on('LogLevel', (newValue) => {
-			console.log(newValue);
-		});
+		Emitter.on('query', this.handleQuery);
+		this.connectWs();
 	}
 	
-	componentWillUnmount() {
-		Emitter.off('LogLevel');
+	handleQuery = (data) => {
+		console.log(data);
+		const {
+			socket,
+			connected
+		} = this.state;
+		if(!socket || !connected){
+			return;
+		}
+		socket.emit('query', data);
+	};
+	
+	connectWs() {
+		console.log('connect');
+		let ws = new WebSocket('ws://localhost:8080/ws');
+		let socket = new Socket(ws);
+		socket.on('connect', this.onConnect);
+		socket.on('disconnect', this.onDisconnect);
+		socket.on('error', this.onError);
+		// event listener to handle 'message' from a server
+		socket.on('message', this.onMessage);
+		this.setState({
+			socket: socket,
+		})
 	}
+	
+	onError = () => {
+		console.log('error');
+		this.setState({
+			connected: false,
+		});
+		setTimeout(() => {
+			this.connectWs();
+		}, 5000)
+	};
+	
+	sendQuery = (msg) => {
+		const {
+			connected,
+			socket
+		} = this.state;
+		if (!connected || !socket) {
+			return;
+		}
+		try {
+			this.state.socket.emit('query', msg);
+		} catch (e) {
+			this.closeSocket();
+			this.onError();
+		}
+	};
+	
+	componentWillUnmount() {
+		Emitter.off('query');
+		this.closeSocket();
+	}
+	
+	closeSocket() {
+		console.log('close');
+		const ws = this.state.socket;
+		if (!ws) {
+			return;
+		}
+		ws.close();
+		this.setState({
+			socket: undefined,
+		})
+	}
+	
+	//handle message
+	onMessage = (data) => {
+		console.log('hello from server! message:', data);
+	};
+	
+	//checking connection
+	checkConnection() {
+		console.log('check connection');
+		const ws = this.state.socket;
+		if (!ws) {
+			return;
+		}
+		if (ws.ws.readyState === WebSocket.CLOSED) {
+			this.closeSocket();
+			this.onError();
+			return;
+		}
+		let _this = this;
+		setTimeout(() => {
+			_this.checkConnection();
+		}, 10000); //call check function after timeout
+	}
+	
+	// onConnect sets the state to true indicating the socket has connected
+	//    successfully.
+	onConnect = () => {
+		let _this = this;
+		setTimeout(() => {
+			_this.checkConnection();
+		}, 2000); //call check function after timeout
+		this.setState({
+			connected: true
+		});
+	};
+	
+	// onDisconnect sets the state to false indicating the socket has been
+	//    disconnected.
+	onDisconnect = () => {
+		this.setState({
+			connected: false
+		});
+	};
 	
 	render() {
 		return (

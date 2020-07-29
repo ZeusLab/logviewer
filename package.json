@@ -49,6 +49,7 @@
     "@babel/preset-react": "^7.9.4",
     "customize-cra": "^0.9.1",
     "customize-cra-add-stylus-loader": "^0.0.3",
+    "express": "^4.17.1",
     "http-proxy-middleware": "^1.0.3",
     "node-http-proxy-json": "^0.1.9",
     "prettier": "^2.0.5",
