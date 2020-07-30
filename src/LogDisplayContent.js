@@ -2,6 +2,7 @@ import React from "react";
 import Moment from "react-moment";
 import Emitter from './services/emitter';
 import Socket from "./services/socket";
+import {LOG_LEVEL_ALL} from "./LogDisplayHeader";
 
 class List extends React.Component {
 	
@@ -76,24 +77,11 @@ export default class LogDisplayContent extends React.Component {
 	}
 	
 	componentDidMount() {
-		Emitter.on('query', this.handleQuery);
 		this.connectWs();
+		Emitter.on('query', this.sendQuery);
 	}
 	
-	handleQuery = (data) => {
-		console.log(data);
-		const {
-			socket,
-			connected
-		} = this.state;
-		if(!socket || !connected){
-			return;
-		}
-		socket.emit('query', data);
-	};
-	
 	connectWs() {
-		console.log('connect');
 		let ws = new WebSocket('ws://localhost:8080/ws');
 		let socket = new Socket(ws);
 		socket.on('connect', this.onConnect);
@@ -107,7 +95,6 @@ export default class LogDisplayContent extends React.Component {
 	}
 	
 	onError = () => {
-		console.log('error');
 		this.setState({
 			connected: false,
 		});
@@ -133,12 +120,11 @@ export default class LogDisplayContent extends React.Component {
 	};
 	
 	componentWillUnmount() {
-		Emitter.off('query');
 		this.closeSocket();
+		Emitter.off('query');
 	}
 	
 	closeSocket() {
-		console.log('close');
 		const ws = this.state.socket;
 		if (!ws) {
 			return;
@@ -156,7 +142,6 @@ export default class LogDisplayContent extends React.Component {
 	
 	//checking connection
 	checkConnection() {
-		console.log('check connection');
 		const ws = this.state.socket;
 		if (!ws) {
 			return;
@@ -166,10 +151,16 @@ export default class LogDisplayContent extends React.Component {
 			this.onError();
 			return;
 		}
-		let _this = this;
-		setTimeout(() => {
-			_this.checkConnection();
-		}, 10000); //call check function after timeout
+		try {
+			ws.emit('ping', "hermes");
+			let _this = this;
+			setTimeout(() => {
+				_this.checkConnection();
+			}, 10000); //call check function after timeout
+		} catch (e) {
+			this.closeSocket();
+			this.onError();
+		}
 	}
 	
 	// onConnect sets the state to true indicating the socket has connected

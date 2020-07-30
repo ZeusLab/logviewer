@@ -113,6 +113,15 @@ export default class LogDisplayHeader extends React.Component {
 			startDateStr: DateToYYYYMMDDHHmm(now),
 			endDate: now,
 			endDateStr: DateToYYYYMMDDHHmm(now),
+			live: false,
+		};
+		this.query = {
+			tag: undefined,
+			level: LOG_LEVEL_ALL,
+			time: {
+				start: now.getTime() - 3600 * 1000,
+				end: now.getTime(),
+			}
 		};
 	}
 	
@@ -151,36 +160,51 @@ export default class LogDisplayHeader extends React.Component {
 	}
 	
 	onLogLevelChange = (event, data) => {
-		Emitter.emit('query', {
-			logLevel: data.value,
-		});
+		this.query.level = data.value;
 		this.setState({
 			currentLogLevel: data.value,
 		});
 	};
 	
 	onTimeRangeChange = (event, data) => {
-		Emitter.emit('query', {
-			timeOption: data.value,
-		});
+		if (data.value === TIME_CUSTOM) {
+			this.query.time = {
+				start: this.state.startDate.getTime(),
+				end: this.state.endDate.getTime(),
+			}
+		} else if (data.value === TIME_LAST12HOUR) {
+			this.query.time = {
+				start: new Date().getTime() - 12 * 3600 * 1000,
+				end: new Date().getTime(),
+			}
+		} else if (data.value === TIME_LAST6HOUR) {
+			this.query.time = {
+				start: new Date().getTime() - 6 * 3600 * 1000,
+				end: new Date().getTime(),
+			}
+		} else {
+			this.query.time = {
+				start: new Date().getTime() - 3600 * 1000,
+				end: new Date().getTime(),
+			}
+		}
 		this.setState({
 			currentTimeOption: data.value,
 		});
 	};
 	
 	onTagChange = (event, data) => {
-		Emitter.emit('query', {
-			tag: data.value,
-		});
+		this.query.tag = data.value;
 		this.setState({
 			currentTag: data.value,
 		});
 	};
 	
 	onStartTimeSelected = (selectedDates, dateStr, instance) => {
-		Emitter.emit('query', {
-			startDate: selectedDates[0],
-		});
+		this.query.time = {
+			start: selectedDates[0].getTime(),
+			end: this.state.endDate.getTime(),
+		};
 		this.setState({
 			startDate: selectedDates[0],
 			startDateStr: DateToYYYYMMDDHHmm(selectedDates[0]),
@@ -188,25 +212,21 @@ export default class LogDisplayHeader extends React.Component {
 	};
 	
 	onEndTimeSelected = (selectedDates, dateStr, instance) => {
-		Emitter.emit('query', {
-			endDate: selectedDates[0],
-		});
+		this.query.time = {
+			start: selectedDates[0].getTime(),
+			end: this.state.endDate.getTime(),
+		};
 		this.setState({
 			endDate: selectedDates[0],
 			endDateStr: DateToYYYYMMDDHHmm(selectedDates[0]),
 		})
-	}
+	};
 	
 	onRefreshClick = () => {
-		Emitter.emit('query', {
-			action: 'refresh',
-		});
 	};
 	
 	onPlayClick = () => {
-		Emitter.emit('query', {
-			action: 'play',
-		});
+		Emitter.emit('query', this.query);
 	};
 	
 	render() {
