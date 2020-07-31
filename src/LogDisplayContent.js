@@ -2,7 +2,6 @@ import React from "react";
 import Moment from "react-moment";
 import Emitter from './services/emitter';
 import Socket from "./services/socket";
-import {LOG_LEVEL_ALL} from "./LogDisplayHeader";
 
 class List extends React.Component {
 	
@@ -19,16 +18,11 @@ class List extends React.Component {
 		});
 	};
 	
-	addMessages = (items, scrollToBottom) => {
-		this.setState(state => {
-			const list = state.items.concat(...items);
-			return {
-				items: list,
-			}
+	setDataSource = (items) => {
+		this.setState({
+			items: items,
 		});
-		if (scrollToBottom) {
-			this.scrollToBottom();
-		}
+		this.scrollToBottom();
 	};
 	
 	scrollToBottom = () => {
@@ -44,10 +38,10 @@ class List extends React.Component {
 		}
 		const listItems = this.state.items.map((item, index) => {
 			return (
-				<div className="scroll-list-item" key={item.id}>
+				<div className="scroll-list-item" key={item.id_str}>
 					<div className="timestamp">
 						<Moment format="YYYY-MM-DD HH:mm:ss,SSS">
-							{item.fluentd_time}
+							{item.timestamp}
 						</Moment>
 					</div>
 					<div className="message">{item.message}</div>
@@ -88,7 +82,7 @@ export default class LogDisplayContent extends React.Component {
 		socket.on('disconnect', this.onDisconnect);
 		socket.on('error', this.onError);
 		// event listener to handle 'message' from a server
-		socket.on('message', this.onMessage);
+		socket.on('logs', this.onReceiveLogs);
 		this.setState({
 			socket: socket,
 		})
@@ -112,6 +106,9 @@ export default class LogDisplayContent extends React.Component {
 			return;
 		}
 		try {
+			if (this.list !== undefined) {
+				this.list.current.clearMessages();
+			}
 			this.state.socket.emit('query', msg);
 		} catch (e) {
 			this.closeSocket();
@@ -122,6 +119,7 @@ export default class LogDisplayContent extends React.Component {
 	componentWillUnmount() {
 		this.closeSocket();
 		Emitter.off('query');
+		Emitter.off('logs');
 	}
 	
 	closeSocket() {
@@ -136,8 +134,14 @@ export default class LogDisplayContent extends React.Component {
 	}
 	
 	//handle message
-	onMessage = (data) => {
-		console.log('hello from server! message:', data);
+	onReceiveLogs = (data) => {
+		const obj = JSON.parse(data)
+		if (obj.code !== 200) {
+			return;
+		}
+		if (this.list !== undefined) {
+			this.list.current.setDataSource(obj.data);
+		}
 	};
 	
 	//checking connection

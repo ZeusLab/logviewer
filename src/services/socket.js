@@ -55,7 +55,7 @@ export default class Socket {
 	message(e) {
 		try {
 			const message = JSON.parse(e.data);
-			console.log(message);
+			//console.log(message);
 			this.ee.emit(message.topic, message.data);
 		} catch (err) {
 			//this.ee.emit('error', err);

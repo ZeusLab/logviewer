@@ -260,7 +260,7 @@ table {
     height: 100%;
     display: block;
     overflow-y: scroll;
-    overflow: hidden;
+    /*overflow: hidden;*/
 }
 
 .scroll-list .scroll-list-item {
