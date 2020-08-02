@@ -174,7 +174,6 @@ export default class LogDisplayContent extends React.Component {
 	componentWillUnmount() {
 		this.closeSocket();
 		Emitter.off('query');
-		Emitter.off('logs');
 	}
 	
 	closeSocket() {
