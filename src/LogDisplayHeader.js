@@ -261,7 +261,7 @@ export default class LogDisplayHeader extends React.Component {
 							onChange={this.onLogLevelChange}
 							options={this.logSeverities}/>
 					</div>
-					<div className="dropdown-area float-left">
+					<div className="selection-button float-left">
 						<DropdownSingleSelection
 							placeHolder="Select time"
 							value={currentTimeOption}
@@ -269,7 +269,7 @@ export default class LogDisplayHeader extends React.Component {
 							onChange={this.onTimeRangeChange}
 							options={this.rangeOfTime}/>
 					</div>
-					<div className="dropdown-area float-left" hidden={offCustomRange}>
+					<div className="selection-button float-left" hidden={offCustomRange}>
 						<div className="dropdown-button dropdown">
 							<Flatpickr
 								data-enable-time
@@ -283,7 +283,7 @@ export default class LogDisplayHeader extends React.Component {
 							<FcCalendar/>
 						</div>
 					</div>
-					<div className="dropdown-area float-left" hidden={offCustomRange}>
+					<div className="selection-button float-left" hidden={offCustomRange}>
 						<div className="dropdown-button dropdown">
 							<Flatpickr
 								data-enable-time

@@ -2,33 +2,88 @@ import React from "react";
 import Moment from "react-moment";
 import Emitter from './services/emitter';
 import Socket from "./services/socket";
+import {LOG_LEVEL_ALL} from "./LogDisplayHeader";
 
 class List extends React.Component {
 	
 	constructor(props) {
 		super(props);
+		this.size = 100;
 		this.state = {
 			items: [],
+			lastId: 0,
 		};
+		this.dataSource = [];
 	}
 	
 	clearMessages = () => {
+		this.dataSource = [];
 		this.setState({
 			items: [],
+			lastId: 0,
 		});
 	};
 	
 	setDataSource = (items) => {
-		this.setState({
-			items: items,
-		});
-		this.scrollToBottom();
+		this.dataSource = this.dataSource.concat(...items);
+		this.appendLogForViewing();
 	};
+	
+	appendLogForViewing = () => {
+		const {
+			items,
+		} = this.state;
+		
+		if (items.length === this.dataSource.length) {
+			return;
+		}
+		
+		const startedPoint = items.length;
+		const data = this.dataSource.slice(startedPoint, startedPoint + this.size);
+		if (data.length === 0) {
+			return;
+		}
+		this.setState({
+			items: items.concat(...data),
+			lastId: data[data.length - 1].id_str,
+		})
+		const element = document.getElementById('scroll-list');
+		console.log(element.scrollTop);
+		console.log(element.scrollHeight);
+		console.log(element.clientHeight);
+	};
+	
 	
 	scrollToBottom = () => {
 		const element = document.getElementById('scroll-list');
 		element.scrollTop = element.scrollHeight - element.clientHeight;
 	};
+	
+	onScroll = (e) => {
+		const element = e.target;
+		if (element.scrollHeight - element.scrollTop === element.clientHeight) {
+			// do something at end of scroll
+			this.appendLogForViewing();
+		}
+	};
+	
+	evenOrOddLine = (index) => {
+		if( index % 2 === 0){
+			return "scroll-list-item";
+		}
+		return "scroll-list-item odd";
+	};
+	
+	logLevelColor = (level) => {
+		if (level === "ERROR" || level === "CRITICAL" || level === "ALERT" || level === "EMERGENCY"){
+			return "log_level text-danger"
+		}
+		if (level === "NOTICE" || level === "WARN"){
+			return "log_level text-warning"
+		}
+		return "log_level text-success"
+	};
+	
 	
 	render() {
 		if (this.state.items === undefined) {
@@ -38,19 +93,20 @@ class List extends React.Component {
 		}
 		const listItems = this.state.items.map((item, index) => {
 			return (
-				<div className="scroll-list-item" key={item.id_str}>
+				<div className={this.evenOrOddLine(index)} key={item.id_str}>
 					<div className="timestamp">
 						<Moment format="YYYY-MM-DD HH:mm:ss,SSS">
 							{item.timestamp}
 						</Moment>
 					</div>
+					<div className={this.logLevelColor(item.level)}>{item.level}</div>
 					<div className="message">{item.message}</div>
-					<div className="separated-line"/>
 				</div>
 			)
 		});
 		return (
 			<div className="scroll-list"
+			     onScroll={this.onScroll}
 			     id="scroll-list">
 				{listItems}
 			</div>
