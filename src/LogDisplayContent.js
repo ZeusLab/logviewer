@@ -2,7 +2,6 @@ import React from "react";
 import Moment from "react-moment";
 import Emitter from './services/emitter';
 import Socket from "./services/socket";
-import {LOG_LEVEL_ALL} from "./LogDisplayHeader";
 
 class List extends React.Component {
 	
@@ -23,6 +22,12 @@ class List extends React.Component {
 			lastId: 0,
 		});
 	};
+	
+	componentDidMount() {
+		const element = document.getElementById('scroll-list');
+		const itemSize = 2 * parseFloat(getComputedStyle(document.documentElement).fontSize);
+		this.size = Math.max(Math.ceil(element.clientHeight / itemSize) * 2, 100);
+	}
 	
 	setDataSource = (items) => {
 		this.dataSource = this.dataSource.concat(...items);
@@ -47,12 +52,7 @@ class List extends React.Component {
 			items: items.concat(...data),
 			lastId: data[data.length - 1].id_str,
 		})
-		const element = document.getElementById('scroll-list');
-		console.log(element.scrollTop);
-		console.log(element.scrollHeight);
-		console.log(element.clientHeight);
 	};
-	
 	
 	scrollToBottom = () => {
 		const element = document.getElementById('scroll-list');
@@ -68,17 +68,17 @@ class List extends React.Component {
 	};
 	
 	evenOrOddLine = (index) => {
-		if( index % 2 === 0){
+		if (index % 2 === 0) {
 			return "scroll-list-item";
 		}
 		return "scroll-list-item odd";
 	};
 	
 	logLevelColor = (level) => {
-		if (level === "ERROR" || level === "CRITICAL" || level === "ALERT" || level === "EMERGENCY"){
+		if (level === "ERROR" || level === "CRITICAL" || level === "ALERT" || level === "EMERGENCY") {
 			return "log_level text-danger"
 		}
-		if (level === "NOTICE" || level === "WARN"){
+		if (level === "NOTICE" || level === "WARN") {
 			return "log_level text-warning"
 		}
 		return "log_level text-success"
@@ -137,7 +137,6 @@ export default class LogDisplayContent extends React.Component {
 		socket.on('connect', this.onConnect);
 		socket.on('disconnect', this.onDisconnect);
 		socket.on('error', this.onError);
-		// event listener to handle 'message' from a server
 		socket.on('logs', this.onReceiveLogs);
 		this.setState({
 			socket: socket,
@@ -191,11 +190,11 @@ export default class LogDisplayContent extends React.Component {
 	
 	//handle message
 	onReceiveLogs = (data) => {
-		const obj = JSON.parse(data)
+		const obj = JSON.parse(data);
 		if (obj.code !== 200) {
 			return;
 		}
-		if (this.list !== undefined) {
+		if (this.list !== undefined && obj.data && obj.data.length > 0) {
 			this.list.current.setDataSource(obj.data);
 		}
 	};
@@ -213,9 +212,8 @@ export default class LogDisplayContent extends React.Component {
 		}
 		try {
 			ws.emit('ping', "hermes");
-			let _this = this;
 			setTimeout(() => {
-				_this.checkConnection();
+				this.checkConnection();
 			}, 10000); //call check function after timeout
 		} catch (e) {
 			this.closeSocket();
@@ -226,9 +224,8 @@ export default class LogDisplayContent extends React.Component {
 	// onConnect sets the state to true indicating the socket has connected
 	//    successfully.
 	onConnect = () => {
-		let _this = this;
 		setTimeout(() => {
-			_this.checkConnection();
+			this.checkConnection();
 		}, 2000); //call check function after timeout
 		this.setState({
 			connected: true
