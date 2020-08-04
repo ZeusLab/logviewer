@@ -5,13 +5,14 @@ import {
 } from "react-bootstrap";
 import {IconContext} from "react-icons";
 import {
-	BsArrowClockwise,
 	BsPlayFill,
 } from "react-icons/bs";
 import {
 	FcCalendar,
 } from "react-icons/fc";
-
+import {
+	FaCircle,
+} from "react-icons/fa";
 import Flatpickr from "react-flatpickr";
 import Emitter from './services/emitter';
 import DropdownSingleSelection from './DropdownSingleSelection';
@@ -222,11 +223,21 @@ export default class LogDisplayHeader extends React.Component {
 		})
 	};
 	
-	onRefreshClick = () => {
-	};
-	
 	onPlayClick = () => {
 		Emitter.emit('query', this.query);
+	};
+	
+	enableStream = () => {
+		const {
+			live,
+			currentTag,
+		} = this.state;
+		if (currentTag === undefined || currentTag === "") {
+			return;
+		}
+		this.setState({
+			live: !live,
+		})
 	};
 	
 	render() {
@@ -239,10 +250,15 @@ export default class LogDisplayHeader extends React.Component {
 			currentTag,
 			currentTimeOption,
 			currentLogLevel,
+			live,
 		} = this.state;
 		const offCustomRange = (currentTimeOption !== TIME_CUSTOM);
 		const disabled = (currentTag === undefined);
 		const maxDate = moment().format("YYYY-MM-DD HH:mm");
+		
+		const circleColor = live ? "red" : "#dadada";
+		const liveStyle = live ? "blink" : "";
+		const btnLiveStyle = live ? "live-query blink float-right" : "live-query disable float-right";
 		return (
 			<div>
 				<div className="log-display-header">
@@ -298,15 +314,15 @@ export default class LogDisplayHeader extends React.Component {
 						</div>
 					</div>
 					<div className="control-area float-right">
-						<IconContext.Provider value={{className: 'icon refresh'}}>
-							<Button onClick={this.onRefreshClick} variant="link" size="sm" className="zero-padding">
-								<BsArrowClockwise/>
-							</Button>
-						</IconContext.Provider>
 						<IconContext.Provider value={{className: 'icon stream'}} size="sm">
-							<Button onClick={this.onPlayClick} variant="link" className="zero-padding">
+							<button onClick={this.onPlayClick} className="execute">
 								<BsPlayFill/>
-							</Button>
+							</button>
+						</IconContext.Provider>
+						<IconContext.Provider value={{className: 'icon stream', color: circleColor}} size="sm">
+							<button onClick={this.enableStream} className={btnLiveStyle}>
+								<FaCircle className={liveStyle}/><span className="label"> Live</span>
+							</button>
 						</IconContext.Provider>
 					</div>
 				</div>

@@ -72,7 +72,7 @@ table {
     background-color: #F5F5F5;
     min-height: 3.5rem;
     border-bottom: #E3E3E3 solid 1px;
-    padding: 0.6rem 0 0 0;
+    padding: 0;
 }
 
 .log-display-header .zero-padding {
@@ -119,6 +119,7 @@ table {
 .selection-button {
     display: inline-table;
     padding-left: 1rem;
+    margin-top: .75rem;
 }
 
 .ui.fluid.dropdown.dropdown-single, .ui.fluid.dropdown.dropdown-multi {
@@ -184,24 +185,38 @@ table {
     padding: 0 1rem;
 }
 
-
 .control-area {
-    padding-right: 16px;
-    line-height: 3.5rem;
-    margin-top: -0.7rem;
-}
-
-.control-area .icon {
-    padding: .625rem;
-    color: #555555;
-    height: 3rem;
-    width: 3rem;
-    vertical-align: middle;
+    padding: 0 1rem 0 0;
 }
 
 .control-area button {
     border: 0;
 }
+
+.execute {
+    margin: .75rem .75rem 0 0;
+    padding: 0;
+    background-color: transparent;
+    border-radius: .25rem;
+    color: #555555;
+}
+
+.execute .icon {
+    padding: .15rem;
+    height: 2rem;
+    width: 2rem;
+    vertical-align: middle;
+}
+
+button.execute:hover {
+    background-color: #5cbeff;
+    color: white;
+}
+
+button.execute:focus {
+    outline: 0 !important;
+}
+
 
 .hidden {
     display: none;
@@ -212,13 +227,6 @@ table {
     line-height: 32px;
     padding: 4px 10px;
     color: #555555;
-}
-
-.float-right button {
-    background: transparent;
-    border: 0;
-    color: #555555;
-    font-style: italic;
 }
 
 .interactions {
@@ -272,4 +280,62 @@ table {
 .scroll-list-item .message {
     width: 80%;
     float: left;
+}
+
+/**
+live stream style
+ */
+.live-query {
+    margin: .75rem 0 0 0;
+    height: 2rem;
+    line-height: 2rem;
+    background-color: #acacac;
+    -webkit-border-radius: .25rem;
+    -moz-border-radius: .25rem;
+    border-radius: .25rem;
+}
+
+button.live-query:hover {
+    background-color: #5cbeff
+}
+
+button.live-query:focus {
+    outline: 0 !important;
+}
+
+.disable {
+    opacity: .2;
+}
+
+.live-query .icon {
+    margin: -.2rem 0 0 0;
+    padding: 0;
+    width: .75rem;
+    height: .75rem;
+    -webkit-border-radius: 4rem;
+    -moz-border-radius: 4rem;
+    border-radius: 4rem;
+
+    -webkit-box-shadow: rgba(255, 255, 255, 0.8) 0 0 .65rem;
+    -moz-box-shadow: rgba(255, 255, 255, 0.8) 0 0 .65rem;
+    box-shadow: rgba(255, 255, 255, 0.8) 0 0 .65rem;
+}
+
+.live-query .label {
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #FFFFFF;
+}
+
+.blink {
+    animation: blinker 1.5s cubic-bezier(.5, 0, 1, 1) infinite alternate;
+}
+
+@keyframes blinker {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0.3;
+    }
 }
